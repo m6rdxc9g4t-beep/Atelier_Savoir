@@ -38,11 +38,31 @@ python desktop.py                   # … ou dans une fenêtre d'application
 La base `instance/savoir.db` est créée automatiquement au premier lancement
 (ou avec `flask --app app init-db`).
 
+## Deux moteurs pour générer les fiches
+
+| Moteur | Où tourne l'IA | Coût | Confidentialité |
+|--------|----------------|------|-----------------|
+| **Ollama, sur votre Mac** (par défaut) | Sur votre ordinateur | Gratuit | Rien ne quitte l'ordinateur |
+| **Claude, avec votre abonnement** | Chez Anthropic, via Claude Code | Inclus dans Pro / Max (compte dans les limites d'usage) | Le texte du chapitre est envoyé à Anthropic |
+
+Le choix se fait à chaque génération ; le moteur par défaut se règle dans **Paramètres**.
+
+Pour Claude : installez Claude Code puis connectez-vous une fois dans un terminal.
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+claude        # connexion avec votre compte Claude, puis /exit
+```
+
+L'app appelle `claude -p` avec une sortie JSON validée par schéma, sans aucun outil et depuis un
+dossier vide (Claude Code ne lit aucun fichier). Elle retire `ANTHROPIC_API_KEY` de l'environnement
+pour que l'abonnement soit utilisé plutôt qu'une facturation à l'usage.
+
 ## Utilisation
 
 1. **Mes cours** : créez un cours, puis importez des chapitres (PDF, Markdown, TXT, ou texte collé).
-2. **Générateur IA** : choisissez un chapitre et un modèle. Ollama propose des fiches ; relisez,
-   corrigez, décochez, puis enregistrez.
+2. **Générateur IA** : choisissez le moteur (Ollama ou Claude), un chapitre et un modèle. L'IA propose
+   des fiches ; relisez, corrigez, décochez, puis enregistrez.
 3. **Révision** : retournez la fiche (clic ou `Espace`), puis évaluez-vous :
    `1` À revoir, `2` Correct, `3` Maîtrisé.
 4. **Paramètres** : adresse d'Ollama, modèle par défaut, nombre de fiches par chapitre, thème.
@@ -62,7 +82,9 @@ Atelier_Savoir/
 │   ├── pages.py            # Vues HTML : /, /courses, /flashcards/generate, /study, /settings
 │   └── api.py              # API REST JSON (/api/…)
 ├── services/
-│   ├── ollama_service.py   # Client Ollama, prompt système strict, parseur JSON tolérant
+│   ├── flashcard_generator.py # Prompt système strict, découpage, parseur JSON tolérant (commun)
+│   ├── ollama_service.py   # Moteur Ollama (local)
+│   ├── claude_service.py   # Moteur Claude via Claude Code (abonnement)
 │   ├── text_extraction.py  # Extraction PDF/MD/TXT, nettoyage, découpage en blocs
 │   ├── spaced_repetition.py# Planification SM-2 simplifiée
 │   └── settings_service.py # Réglages persistants et fabrique du client Ollama
@@ -95,18 +117,18 @@ Atelier_Savoir/
 | GET/PATCH/DELETE | `/api/courses/<id>`            | Détail (avec chapitres) / modifier / supprimer |
 | POST    | `/api/courses/<id>/chapters`            | Importer un chapitre (`file` multipart ou `content`) |
 | GET/DELETE | `/api/chapters/<id>`                 | Lire / supprimer un chapitre                 |
-| POST    | `/api/chapters/<id>/generate`           | Proposer des fiches via Ollama (non enregistrées) |
+| POST    | `/api/chapters/<id>/generate`           | Proposer des fiches (`provider` : `ollama` ou `claude`, `model`) |
 | GET/POST| `/api/flashcards`                       | Lister / enregistrer des fiches (lot)        |
 | PATCH/DELETE | `/api/flashcards/<id>`             | Modifier / supprimer une fiche               |
 | POST    | `/api/flashcards/<id>/review`           | Évaluer une fiche (`rating`)                 |
 | GET     | `/api/study/session?course_id=&mode=`   | File de révision (`dues` ou `toutes`)        |
-| GET     | `/api/stats`, `/api/ollama/status`      | Statistiques, état d'Ollama                  |
+| GET     | `/api/stats`, `/api/ollama/status`, `/api/claude/status` | Statistiques, état des moteurs |
 | GET/PUT | `/api/settings`                         | Réglages                                     |
 
-### Génération par Ollama
+### Génération des fiches
 
-- Appel à `POST /api/chat` avec `format` = schéma JSON : le modèle est contraint de répondre
-  `{"flashcards": [{"question", "answer", "type"}]}`.
+- Les deux moteurs partagent le prompt système et le schéma `{"flashcards": [{"question", "answer", "type"}]}` :
+  Ollama via `POST /api/chat` (`format` = schéma), Claude via `claude -p --json-schema`.
 - Les longs chapitres sont découpés en blocs (`ATELIER_CHUNK_CHARS`, 6000 caractères par défaut)
   sans couper les formules `$$…$$`.
 - Le parseur répare les antislashs LaTeX mal échappés (`\frac`, `\theta`, `\sigma`…) et ignore
@@ -125,5 +147,7 @@ npm run css:watch             # … ou en continu
 ### Variables d'environnement
 
 `OLLAMA_URL`, `OLLAMA_MODEL`, `OLLAMA_TIMEOUT`, `ATELIER_CARDS_PER_CHAPTER`, `ATELIER_CHUNK_CHARS`,
+`ATELIER_AI_PROVIDER` (`ollama` ou `claude`), `ATELIER_CLAUDE_MODEL` (`sonnet`, `opus`, `haiku`),
+`ATELIER_CLAUDE_TIMEOUT`, `CLAUDE_PATH` (emplacement de Claude Code s'il n'est pas trouvé),
 `ATELIER_DB`, `ATELIER_UPLOADS`, `ATELIER_PORT` (5050 ; le port 5000 est pris par AirPlay sur macOS), `SECRET_KEY` (voir `.env.example`). Les réglages enregistrés depuis
 `/settings` priment sur ces valeurs.

@@ -4,8 +4,8 @@
 {% block content %}
 <h1 class="font-serif text-4xl font-semibold">Générateur de fiches</h1>
 <p class="mt-2 max-w-2xl text-nuit-600 dark:text-nuit-200">
-  Ollama lit le chapitre sur votre machine et propose des fiches : définitions, formules, théorèmes et notions clés.
-  Rien ne quitte votre ordinateur. Relisez les propositions avant de les enregistrer.
+  L'IA lit le chapitre et propose des fiches : définitions, formules, théorèmes et notions clés.
+  Relisez les propositions avant de les enregistrer.
 </p>
 
 {% if not courses %}
@@ -14,35 +14,58 @@
     <a href="{{ url_for('pages.courses') }}" class="btn btn-primary mt-5">Créer un cours</a>
   </div>
 {% else %}
-<form id="form-generation" class="panneau mt-10 grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_8rem_auto] xl:items-end"
+<form id="form-generation" class="panneau mt-10 space-y-5 p-5"
       data-selected-course="{{ selected_course or '' }}" data-selected-chapter="{{ selected_chapter or '' }}"
-      data-default-model="{{ settings.ollama_model }}">
-  <div>
-    <label class="label" for="gen-cours">Cours</label>
-    <select class="field" id="gen-cours" required>
-      {% for c in courses %}<option value="{{ c.id }}">{{ c.title }}</option>{% endfor %}
-    </select>
+      data-default-provider="{{ settings.ai_provider }}"
+      data-default-ollama-model="{{ settings.ollama_model }}"
+      data-default-claude-model="{{ settings.claude_model }}">
+  <fieldset>
+    <legend class="label">Moteur</legend>
+    <div class="grid gap-3 sm:grid-cols-2" role="radiogroup">
+      <label class="moteur" data-moteur="ollama">
+        <input type="radio" name="provider" value="ollama" class="sr-only" {{ 'checked' if settings.ai_provider != 'claude' }}>
+        <span class="font-semibold">Ollama, sur votre Mac</span>
+        <span class="text-sm text-nuit-500 dark:text-nuit-300">Gratuit et confidentiel : rien ne quitte l'ordinateur.</span>
+        <span class="moteur-etat text-xs" data-etat-ollama></span>
+      </label>
+      <label class="moteur" data-moteur="claude">
+        <input type="radio" name="provider" value="claude" class="sr-only" {{ 'checked' if settings.ai_provider == 'claude' }}>
+        <span class="font-semibold">Claude, avec votre abonnement</span>
+        <span class="text-sm text-nuit-500 dark:text-nuit-300">Plus précis. Le texte du chapitre est envoyé à Anthropic.</span>
+        <span class="moteur-etat text-xs" data-etat-claude></span>
+      </label>
+    </div>
+  </fieldset>
+
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_8rem_auto] xl:items-end">
+    <div>
+      <label class="label" for="gen-cours">Cours</label>
+      <select class="field" id="gen-cours" required>
+        {% for c in courses %}<option value="{{ c.id }}">{{ c.title }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="label" for="gen-chapitre">Chapitre</label>
+      <select class="field" id="gen-chapitre" required></select>
+    </div>
+    <div>
+      <label class="label" for="gen-modele">Modèle</label>
+      <select class="field" id="gen-modele"></select>
+    </div>
+    <div>
+      <label class="label" for="gen-nombre">Fiches max</label>
+      <input class="field" id="gen-nombre" type="number" min="1" max="60" value="{{ settings.cards_per_chapter }}">
+    </div>
+    <button class="btn btn-primary md:col-span-2 xl:col-span-1" type="submit" id="gen-lancer">Générer les fiches</button>
   </div>
-  <div>
-    <label class="label" for="gen-chapitre">Chapitre</label>
-    <select class="field" id="gen-chapitre" required></select>
-  </div>
-  <div>
-    <label class="label" for="gen-modele">Modèle</label>
-    <select class="field" id="gen-modele">
-      <option value="{{ settings.ollama_model }}">{{ settings.ollama_model }}</option>
-    </select>
-  </div>
-  <div>
-    <label class="label" for="gen-nombre">Fiches max</label>
-    <input class="field" id="gen-nombre" type="number" min="1" max="60" value="{{ settings.cards_per_chapter }}">
-  </div>
-  <button class="btn btn-primary md:col-span-2 xl:col-span-1" type="submit" id="gen-lancer">Générer les fiches</button>
 </form>
+<script>
+  window.CLAUDE_MODELS = {{ claude_models|tojson }};
+</script>
 
 <div id="gen-attente" class="mt-10 hidden items-center gap-3 text-nuit-600 dark:text-nuit-200" role="status">
   <span class="plume text-ambre-500"></span>
-  <span>Ollama lit le chapitre. Comptez de quelques secondes à quelques minutes selon le modèle et la longueur du texte.</span>
+  <span id="gen-attente-texte">L'IA lit le chapitre.</span>
 </div>
 
 <section id="gen-resultats" class="mt-10 hidden" aria-labelledby="gen-titre">
