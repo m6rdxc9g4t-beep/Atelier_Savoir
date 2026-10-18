@@ -6,7 +6,22 @@ grâce à une IA locale (**Ollama**). Révision active façon Anki, avec répét
 
 Aucune donnée ne quitte la machine : polices, KaTeX et CSS sont servis localement.
 
-## Démarrage
+## Application macOS (double-clic)
+
+1. Installez [Ollama](https://ollama.com) puis un modèle : `ollama pull llama3.1`.
+2. Dans le Finder, double-cliquez sur **`Installer Atelier Savoir.command`** à la racine du projet.
+   Le script crée l'environnement Python, installe les dépendances et place
+   **Atelier Savoir.app** dans `~/Applications`.
+3. Ouvrez l'app depuis le Launchpad ou Spotlight, et glissez-la dans le Dock.
+
+L'app s'ouvre dans sa propre fenêtre, démarre Ollama s'il ne tourne pas, et s'arrête proprement
+à la fermeture. Elle utilise ce dossier de projet : après un `git pull`, il suffit de la relancer ;
+si vous déplacez le dossier, relancez l'installeur. Journal : `~/Library/Logs/AtelierSavoir/`.
+
+Si macOS refuse d'ouvrir le `.command` (« développeur non identifié ») : clic droit → Ouvrir,
+ou dans un terminal `./macos/build_app.sh`.
+
+## Démarrage en ligne de commande
 
 ```bash
 python -m venv .venv
@@ -16,7 +31,8 @@ pip install -r requirements.txt
 ollama serve                        # dans un autre terminal, si Ollama n'est pas déjà lancé
 ollama pull llama3.1                # ou mistral, qwen2.5:7b…
 
-python app.py                       # http://127.0.0.1:5000
+python app.py                       # http://127.0.0.1:5050
+python desktop.py                   # … ou dans une fenêtre d'application
 ```
 
 La base `instance/savoir.db` est créée automatiquement au premier lancement
@@ -36,6 +52,9 @@ La base `instance/savoir.db` est créée automatiquement au premier lancement
 ```
 Atelier_Savoir/
 ├── app.py                  # Fabrique Flask, navigation, filtres Jinja
+├── desktop.py              # Lanceur bureau : serveur + Ollama + fenêtre native (pywebview)
+├── Installer Atelier Savoir.command  # Installeur macOS (double-clic)
+├── macos/                  # build_app.sh (construit le .app), icon.png
 ├── config.py               # Configuration (surchargeable par variables d'environnement)
 ├── database.py             # Connexion SQLite, schéma versionné (PRAGMA user_version)
 ├── models.py               # Accès aux données : cours, chapitres, fiches, révisions, réglages
@@ -106,5 +125,5 @@ npm run css:watch             # … ou en continu
 ### Variables d'environnement
 
 `OLLAMA_URL`, `OLLAMA_MODEL`, `OLLAMA_TIMEOUT`, `ATELIER_CARDS_PER_CHAPTER`, `ATELIER_CHUNK_CHARS`,
-`ATELIER_DB`, `ATELIER_UPLOADS`, `SECRET_KEY` (voir `.env.example`). Les réglages enregistrés depuis
+`ATELIER_DB`, `ATELIER_UPLOADS`, `ATELIER_PORT` (5050 ; le port 5000 est pris par AirPlay sur macOS), `SECRET_KEY` (voir `.env.example`). Les réglages enregistrés depuis
 `/settings` priment sur ces valeurs.

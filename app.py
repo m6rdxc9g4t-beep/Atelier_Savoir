@@ -1,8 +1,11 @@
 """Point d'entrée d'Atelier_Savoir.
 
-Lancement :  python app.py            (http://127.0.0.1:5000)
-        ou   flask --app app run --debug
+Lancement :  python app.py            (http://127.0.0.1:5050)
+        ou   python desktop.py        (fenêtre d'application)
+
+Port 5050 par défaut : sur macOS, le port 5000 est occupé par le récepteur AirPlay.
 """
+import os
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
@@ -58,4 +61,4 @@ def create_app(config_object=Config, **overrides):
 
 
 if __name__ == "__main__":
-    create_app().run(debug=True)
+    create_app().run(port=int(os.environ.get("ATELIER_PORT", "5050")), debug=True)

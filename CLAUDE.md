@@ -3,7 +3,8 @@
 Contexte de référence : `specifications.md` (produit, design) et `instructions.md` (workflow Git).
 
 ## Commandes
-- Lancer : `python app.py` (http://127.0.0.1:5000)
+- Lancer : `python app.py` (http://127.0.0.1:5050) ou `python desktop.py` (fenêtre native)
+- App macOS : `./macos/build_app.sh` reconstruit et réinstalle `~/Applications/Atelier Savoir.app`
 - Tests : `pytest -q` — Ollama est simulé via `OLLAMA_CLIENT_FACTORY`, aucun serveur requis
 - CSS : `npm run css` après toute modification de classes Tailwind dans `templates/` ou `static/js/`
 
