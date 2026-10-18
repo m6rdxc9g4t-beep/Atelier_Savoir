@@ -1,0 +1,110 @@
+# Atelier Savoir
+
+Application web **100 % locale** pour stocker ses cours, les organiser par matière et chapitre,
+et en tirer automatiquement des flashcards (définitions, formules LaTeX, théorèmes, notions clés)
+grâce à une IA locale (**Ollama**). Révision active façon Anki, avec répétition espacée.
+
+Aucune donnée ne quitte la machine : polices, KaTeX et CSS sont servis localement.
+
+## Démarrage
+
+```bash
+python -m venv .venv
+source .venv/bin/activate          # Windows : .venv\Scripts\activate
+pip install -r requirements.txt
+
+ollama serve                        # dans un autre terminal, si Ollama n'est pas déjà lancé
+ollama pull llama3.1                # ou mistral, qwen2.5:7b…
+
+python app.py                       # http://127.0.0.1:5000
+```
+
+La base `instance/savoir.db` est créée automatiquement au premier lancement
+(ou avec `flask --app app init-db`).
+
+## Utilisation
+
+1. **Mes cours** : créez un cours, puis importez des chapitres (PDF, Markdown, TXT, ou texte collé).
+2. **Générateur IA** : choisissez un chapitre et un modèle. Ollama propose des fiches ; relisez,
+   corrigez, décochez, puis enregistrez.
+3. **Révision** : retournez la fiche (clic ou `Espace`), puis évaluez-vous :
+   `1` À revoir, `2` Correct, `3` Maîtrisé.
+4. **Paramètres** : adresse d'Ollama, modèle par défaut, nombre de fiches par chapitre, thème.
+
+## Architecture
+
+```
+Atelier_Savoir/
+├── app.py                  # Fabrique Flask, navigation, filtres Jinja
+├── config.py               # Configuration (surchargeable par variables d'environnement)
+├── database.py             # Connexion SQLite, schéma versionné (PRAGMA user_version)
+├── models.py               # Accès aux données : cours, chapitres, fiches, révisions, réglages
+├── routes/
+│   ├── pages.py            # Vues HTML : /, /courses, /flashcards/generate, /study, /settings
+│   └── api.py              # API REST JSON (/api/…)
+├── services/
+│   ├── ollama_service.py   # Client Ollama, prompt système strict, parseur JSON tolérant
+│   ├── text_extraction.py  # Extraction PDF/MD/TXT, nettoyage, découpage en blocs
+│   ├── spaced_repetition.py# Planification SM-2 simplifiée
+│   └── settings_service.py # Réglages persistants et fabrique du client Ollama
+├── templates/              # Jinja + Tailwind (base, tableau de bord, cours, générateur, révision…)
+├── static/
+│   ├── css/                # app.css (composants, fiche bristol), tailwind.css (compilé), fonts.css
+│   ├── js/                 # app.js (commun), course.js, generate.js, study.js
+│   ├── fonts/              # Literata, Instrument Sans (SIL OFL)
+│   └── vendor/katex/       # Rendu des formules LaTeX
+├── tests/test_app.py       # Tests pytest (Ollama simulé)
+├── instance/               # savoir.db (ignoré par Git)
+└── uploads/                # Fichiers de cours originaux (ignorés par Git)
+```
+
+### Modèle de données
+
+| Table        | Rôle                                                                 |
+|--------------|----------------------------------------------------------------------|
+| `courses`    | Cours (titre, matière, description)                                  |
+| `chapters`   | Chapitres d'un cours : texte extrait + fichier source                |
+| `flashcards` | Question, réponse, type (`definition`, `formule`, `theoreme`, `notion`), origine (`ia`/`manuel`) et état de répétition (facilité, intervalle, échéance, statut) |
+| `reviews`    | Historique des évaluations (`a_revoir`, `correct`, `maitrise`)       |
+| `settings`   | Réglages modifiés depuis l'interface                                 |
+
+### API REST
+
+| Méthode | Route                                   | Rôle                                         |
+|---------|-----------------------------------------|----------------------------------------------|
+| GET/POST| `/api/courses`                          | Lister / créer un cours                      |
+| GET/PATCH/DELETE | `/api/courses/<id>`            | Détail (avec chapitres) / modifier / supprimer |
+| POST    | `/api/courses/<id>/chapters`            | Importer un chapitre (`file` multipart ou `content`) |
+| GET/DELETE | `/api/chapters/<id>`                 | Lire / supprimer un chapitre                 |
+| POST    | `/api/chapters/<id>/generate`           | Proposer des fiches via Ollama (non enregistrées) |
+| GET/POST| `/api/flashcards`                       | Lister / enregistrer des fiches (lot)        |
+| PATCH/DELETE | `/api/flashcards/<id>`             | Modifier / supprimer une fiche               |
+| POST    | `/api/flashcards/<id>/review`           | Évaluer une fiche (`rating`)                 |
+| GET     | `/api/study/session?course_id=&mode=`   | File de révision (`dues` ou `toutes`)        |
+| GET     | `/api/stats`, `/api/ollama/status`      | Statistiques, état d'Ollama                  |
+| GET/PUT | `/api/settings`                         | Réglages                                     |
+
+### Génération par Ollama
+
+- Appel à `POST /api/chat` avec `format` = schéma JSON : le modèle est contraint de répondre
+  `{"flashcards": [{"question", "answer", "type"}]}`.
+- Les longs chapitres sont découpés en blocs (`ATELIER_CHUNK_CHARS`, 6000 caractères par défaut)
+  sans couper les formules `$$…$$`.
+- Le parseur répare les antislashs LaTeX mal échappés (`\frac`, `\theta`, `\sigma`…) et ignore
+  les questions déjà présentes dans le chapitre.
+
+## Développement
+
+```bash
+pytest -q                 # tests (aucun Ollama requis)
+npm install && npm run css    # recompiler Tailwind après modification des templates
+npm run css:watch             # … ou en continu
+```
+
+`static/css/tailwind.css` est versionné : Node n'est nécessaire que pour modifier le style.
+
+### Variables d'environnement
+
+`OLLAMA_URL`, `OLLAMA_MODEL`, `OLLAMA_TIMEOUT`, `ATELIER_CARDS_PER_CHAPTER`, `ATELIER_CHUNK_CHARS`,
+`ATELIER_DB`, `ATELIER_UPLOADS`, `SECRET_KEY` (voir `.env.example`). Les réglages enregistrés depuis
+`/settings` priment sur ces valeurs.

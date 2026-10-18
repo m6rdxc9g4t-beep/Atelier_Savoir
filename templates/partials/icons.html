@@ -1,0 +1,17 @@
+{# Icônes de la navigation (trait 1.6, 20 px, héritent de la couleur du texte) #}
+{% macro icon(name, cls='h-5 w-5') -%}
+<svg class="{{ cls }} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+{%- if name == 'accueil' %}
+  <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/>
+{%- elif name == 'cours' %}
+  <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M13 4h5.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H13z"/><path d="M7 8h1.5M15.5 8H17"/>
+{%- elif name == 'ia' %}
+  <rect x="3.5" y="7" width="13" height="13" rx="1.5"/><path d="M7.5 7V5.5A1.5 1.5 0 0 1 9 4h10a1.5 1.5 0 0 1 1.5 1.5v10A1.5 1.5 0 0 1 19 17h-2.5"/><path d="M7 12h6M7 15.5h4"/>
+{%- elif name == 'revision' %}
+  <path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/>
+{%- elif name == 'reglages' %}
+  <path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>
+{%- endif %}
+</svg>
+{%- endmacro %}

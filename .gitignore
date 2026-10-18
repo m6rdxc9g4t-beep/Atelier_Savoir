@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Données locales (cours personnels : ne jamais les pousser sur GitHub)
+instance/*
+!instance/.gitkeep
+uploads/*
+!uploads/.gitkeep
+*.db
+*.db-wal
+*.db-shm
+
+# Éditeurs / système
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.env
+
+# Outillage front
+node_modules/
