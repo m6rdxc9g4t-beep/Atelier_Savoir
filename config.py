@@ -28,6 +28,12 @@ class Config:
     CARDS_PER_CHAPTER = int(os.environ.get("ATELIER_CARDS_PER_CHAPTER", "15"))
     CHUNK_CHARS = int(os.environ.get("ATELIER_CHUNK_CHARS", "6000"))
 
+    # Moteur par défaut : « ollama » (100 % local) ou « claude » (via l'abonnement Claude)
+    AI_PROVIDER = os.environ.get("ATELIER_AI_PROVIDER", "ollama")
+    CLAUDE_MODEL = os.environ.get("ATELIER_CLAUDE_MODEL", "sonnet")
+    CLAUDE_TIMEOUT = int(os.environ.get("ATELIER_CLAUDE_TIMEOUT", "300"))
+    CLAUDE_CHUNK_CHARS = int(os.environ.get("ATELIER_CLAUDE_CHUNK_CHARS", "40000"))
+
 
 class TestConfig(Config):
     TESTING = True

@@ -116,6 +116,25 @@ textarea.field { line-height: 1.55; resize: vertical; }
 .maitrise { height: 4px; border-radius: 2px; background: var(--bordure); overflow: hidden; }
 .maitrise > span { display: block; height: 100%; background: var(--emeraude); border-radius: 2px; }
 
+/* Choix du moteur d'IA */
+.moteur {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  padding: .85rem 1rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--bordure);
+  cursor: pointer;
+  transition: border-color .15s, background-color .15s;
+}
+.moteur:hover { border-color: var(--nuit-300); }
+.moteur:has(input:checked) { border-color: var(--ambre); background: rgba(232, 176, 74, .08); }
+.moteur:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
+.moteur-etat { margin-top: .25rem; color: var(--texte-doux); }
+.moteur-etat.is-ok { color: var(--emeraude); }
+.moteur-etat.is-ko { color: var(--framboise); }
+
 /* Zone de dépôt de fichier */
 .depot {
   border: 1.5px dashed var(--bordure);

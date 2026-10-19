@@ -26,7 +26,7 @@ class FakeOllama(OllamaClient):
     """Remplace les appels HTTP par une réponse fixe."""
     calls = []
 
-    def chat_json(self, system, user, schema=None):
+    def complete_json(self, system, user, schema=None):
         FakeOllama.calls.append(user)
         return json.dumps(FAKE_CARDS)
 
@@ -136,7 +136,7 @@ def test_generation_puis_enregistrement(client):
 def test_ollama_indisponible(client, monkeypatch):
     def boom(self, *a, **k):
         raise OllamaError("Impossible de joindre Ollama")
-    monkeypatch.setattr(FakeOllama, "chat_json", boom)
+    monkeypatch.setattr(FakeOllama, "complete_json", boom)
     cid = make_course(client)["id"]
     ch = client.post(f"/api/courses/{cid}/chapters", json={"title": "A", "content": "B"}).get_json()
     r = client.post(f"/api/chapters/{ch['id']}/generate", json={})
