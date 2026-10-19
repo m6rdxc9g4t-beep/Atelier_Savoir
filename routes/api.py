@@ -7,8 +7,11 @@ from flask import Blueprint, current_app, jsonify, request
 from werkzeug.utils import secure_filename
 
 import models
-from services.settings_service import current_settings, get_ollama_client
-from services.ollama_service import OllamaError
+from services.claude_service import CLAUDE_MODELS
+from services.flashcard_generator import GenerationError
+from services.settings_service import (
+    PROVIDERS, current_settings, get_claude_client, get_generator, get_ollama_client,
+)
 from services.spaced_repetition import RATINGS
 from services.text_extraction import ExtractionError, extract_text, source_type_for
 
@@ -151,7 +154,10 @@ def chapters_delete(chapter_id):
 
 @api.post("/chapters/<int:chapter_id>/generate")
 def chapters_generate(chapter_id):
-    """Propose des flashcards générées par Ollama (rien n'est enregistré ici)."""
+    """Propose des flashcards (rien n'est enregistré ici).
+
+    Corps JSON : {provider: "ollama" | "claude", model?, max_cards?}
+    """
     chapter = models.get_chapter(chapter_id)
     if chapter is None:
         return error("Chapitre introuvable.", 404)
@@ -162,19 +168,23 @@ def chapters_generate(chapter_id):
         return error("Le nombre de cartes doit être un entier.")
     max_cards = max(1, min(max_cards, 60))
 
-    client = get_ollama_client(data.get("model") or None)
+    provider = data.get("provider") or None
+    if provider is not None and provider not in PROVIDERS:
+        return error("Moteur inconnu : choisissez Ollama ou Claude.")
+    generator = get_generator(provider, data.get("model") or None)
     course = models.get_course(chapter["course_id"])
     try:
-        cards = client.generate_flashcards(
+        cards = generator.generate_flashcards(
             chapter["content"],
             title=f"{course['title']} — {chapter['title']}",
             max_cards=max_cards,
             exclude_questions=models.existing_questions(chapter_id),
         )
-    except OllamaError as exc:
+    except GenerationError as exc:
         return error(str(exc), 502)
     return jsonify({"chapter_id": chapter_id, "course_id": chapter["course_id"],
-                    "model": client.model, "cards": cards})
+                    "provider": generator.provider, "provider_label": generator.label,
+                    "model": generator.model, "cards": cards})
 
 
 # ---------------------------------------------------------------- flashcards
@@ -258,6 +268,13 @@ def ollama_status():
     return jsonify(get_ollama_client().status())
 
 
+@api.get("/claude/status")
+def claude_status():
+    status = get_claude_client().status()
+    status["model_choices"] = [{"id": m, "label": label} for m, label in CLAUDE_MODELS]
+    return jsonify(status)
+
+
 @api.get("/settings")
 def settings_show():
     return jsonify(current_settings())
@@ -277,6 +294,15 @@ def settings_update():
         if not model:
             return error("Choisissez un modèle.")
         values["ollama_model"] = model
+    if "ai_provider" in data:
+        if data["ai_provider"] not in PROVIDERS:
+            return error("Moteur inconnu : choisissez Ollama ou Claude.")
+        values["ai_provider"] = data["ai_provider"]
+    if "claude_model" in data:
+        model = str(data["claude_model"]).strip()
+        if not model:
+            return error("Choisissez un modèle Claude.")
+        values["claude_model"] = model
     if "cards_per_chapter" in data:
         try:
             n = int(data["cards_per_chapter"])

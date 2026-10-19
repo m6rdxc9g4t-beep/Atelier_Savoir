@@ -2,7 +2,8 @@
 from flask import Blueprint, abort, render_template, request
 
 import models
-from services.settings_service import current_settings
+from services.claude_service import CLAUDE_MODELS
+from services.settings_service import PROVIDERS, current_settings
 
 pages = Blueprint("pages", __name__)
 
@@ -45,6 +46,8 @@ def generate():
         selected_course=request.args.get("course_id", type=int),
         selected_chapter=request.args.get("chapter_id", type=int),
         settings=current_settings(),
+        providers=PROVIDERS,
+        claude_models=CLAUDE_MODELS,
     )
 
 
@@ -60,4 +63,5 @@ def study():
 
 @pages.get("/settings")
 def settings():
-    return render_template("settings.html", settings=current_settings())
+    return render_template("settings.html", settings=current_settings(), providers=PROVIDERS,
+                           claude_models=CLAUDE_MODELS)

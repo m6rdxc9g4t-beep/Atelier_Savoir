@@ -41,15 +41,53 @@
     }
   }
 
-  async function chargerModeles() {
-    const status = await Atelier.refreshOllamaStatus();
-    if (!status || !status.available || !status.models.length) return;
-    const defaut = form.dataset.defaultModel;
-    el.modele.innerHTML = status.models.map((m) =>
-      `<option value="${Atelier.escapeHtml(m)}">${Atelier.escapeHtml(m)}</option>`).join('');
-    const match = status.models.find((m) => m === defaut || m === `${defaut}:latest`);
-    el.modele.value = match || status.models[0];
+  // ------------------------------------------------- moteur et modèles
+  const etats = { ollama: null, claude: null };
+  const moteur = () => form.querySelector('input[name="provider"]:checked')?.value || 'ollama';
+
+  function remplirModeles() {
+    const options = moteur() === 'claude'
+      ? (window.CLAUDE_MODELS || []).map(([id, label]) => [id, label])
+      : (etats.ollama?.models?.length ? etats.ollama.models : [form.dataset.defaultOllamaModel]).map((m) => [m, m]);
+    const defaut = moteur() === 'claude' ? form.dataset.defaultClaudeModel : form.dataset.defaultOllamaModel;
+    el.modele.innerHTML = options.map(([id, label]) =>
+      `<option value="${Atelier.escapeHtml(id)}">${Atelier.escapeHtml(label)}</option>`).join('');
+    const match = options.find(([id]) => id === defaut || id === `${defaut}:latest`);
+    if (match) el.modele.value = match[0];
   }
+
+  function afficherEtat(nom, ok, texte) {
+    const cible = form.querySelector(`[data-etat-${nom}]`);
+    cible.textContent = texte;
+    cible.classList.toggle('is-ok', ok);
+    cible.classList.toggle('is-ko', !ok);
+  }
+
+  async function chargerEtats() {
+    const [ollama, claude] = await Promise.all([
+      Atelier.refreshOllamaStatus(),
+      api('/api/claude/status').catch(() => null),
+    ]);
+    etats.ollama = ollama;
+    etats.claude = claude;
+    if (ollama?.available) {
+      afficherEtat('ollama', true, ollama.models.length ? `Prêt : ${ollama.models.length} modèle(s) installé(s)` : 'Aucun modèle installé');
+    } else {
+      afficherEtat('ollama', false, 'Ollama ne répond pas. Lancez l’application Ollama.');
+    }
+    if (claude?.available) {
+      const texte = claude.subscription ? 'Prêt : connecté avec votre abonnement'
+        : claude.auth_method === 'api_key' ? 'Connecté avec une clé API (facturée à l’usage)'
+        : 'Prêt';
+      afficherEtat('claude', true, texte);
+    } else {
+      afficherEtat('claude', false, claude?.error || 'Claude Code introuvable.');
+    }
+    remplirModeles();
+  }
+
+  form.querySelectorAll('input[name="provider"]').forEach((radio) =>
+    radio.addEventListener('change', remplirModeles));
 
   // ------------------------------------------------------------ fiches
   function majApercu(li) {
@@ -87,12 +125,15 @@
     if (!chapterId) return toast('Choisissez un chapitre.', 'erreur');
     el.lancer.disabled = true;
     el.relancer.disabled = true;
+    document.getElementById('gen-attente-texte').textContent = moteur() === 'claude'
+      ? 'Claude lit le chapitre. Comptez une à deux minutes.'
+      : 'Ollama lit le chapitre sur votre Mac. Comptez de quelques secondes à quelques minutes selon le modèle.';
     el.attente.classList.replace('hidden', 'flex');
     el.resultats.classList.add('hidden');
     try {
       const res = await api(`/api/chapters/${chapterId}/generate`, {
         method: 'POST',
-        body: { model: el.modele.value, max_cards: Number(el.nombre.value) },
+        body: { provider: moteur(), model: el.modele.value, max_cards: Number(el.nombre.value) },
       });
       derniere = { chapter_id: res.chapter_id, course_id: res.course_id };
       if (!res.cards.length) {
@@ -100,7 +141,7 @@
         return;
       }
       const n = res.cards.length;
-      el.source.textContent = `${n} proposition${n > 1 ? 's' : ''} de ${res.model}`;
+      el.source.textContent = `${n} proposition${n > 1 ? 's' : ''} de ${res.provider_label}, modèle ${res.model}`;
       afficherFiches(res.cards);
       el.resultats.classList.remove('hidden');
       el.resultats.scrollIntoView({ block: 'start' });
@@ -144,5 +185,6 @@
 
   if (form.dataset.selectedCourse) el.cours.value = form.dataset.selectedCourse;
   chargerChapitres(form.dataset.selectedChapter);
-  chargerModeles();
+  remplirModeles();
+  chargerEtats();
 })();
