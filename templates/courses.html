@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% from 'partials/fiche.html' import ligne_cours %}
+{% block title %}Mes cours{% endblock %}
+
+{% block content %}
+<h1 class="font-serif text-4xl font-semibold">Mes cours</h1>
+<p class="mt-2 max-w-xl text-nuit-600 dark:text-nuit-200">
+  Un cours regroupe les chapitres d'une matière. Chaque chapitre importé peut être transformé en fiches.
+</p>
+
+<div class="mt-10 grid gap-12 lg:grid-cols-[1fr_20rem]">
+  <section aria-labelledby="liste-cours">
+    <h2 id="liste-cours" class="sr-only">Liste des cours</h2>
+    {% if courses %}
+      <ul class="divide-y divide-nuit-100 border-t border-nuit-100 dark:divide-nuit-800 dark:border-nuit-800">
+        {% for course in courses %}{{ ligne_cours(course) }}{% endfor %}
+      </ul>
+    {% else %}
+      <div class="panneau px-6 py-10 text-center">
+        <p class="font-serif text-xl">Votre bibliothèque est vide.</p>
+        <p class="mt-2 text-sm text-nuit-500 dark:text-nuit-300">Créez votre premier cours avec le formulaire.</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <section aria-labelledby="nouveau-cours" class="lg:sticky lg:top-12 lg:self-start">
+    <form id="form-cours" class="panneau space-y-4 p-5">
+      <h2 id="nouveau-cours" class="font-serif text-xl font-semibold">Nouveau cours</h2>
+      <div>
+        <label class="label" for="cours-titre">Titre</label>
+        <input class="field" id="cours-titre" name="title" required maxlength="160"
+               placeholder="Thermodynamique, L2">
+      </div>
+      <div>
+        <label class="label" for="cours-matiere">Matière</label>
+        <input class="field" id="cours-matiere" name="subject" maxlength="80" list="matieres"
+               placeholder="Physique">
+        <datalist id="matieres">{% for s in subjects %}<option value="{{ s }}">{% endfor %}</datalist>
+      </div>
+      <div>
+        <label class="label" for="cours-description">Description <span class="font-normal text-nuit-400">(facultatif)</span></label>
+        <textarea class="field" id="cours-description" name="description" rows="3"></textarea>
+      </div>
+      <button class="btn btn-primary w-full" type="submit">Créer le cours</button>
+    </form>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('form-cours').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.submitter;
+    btn.disabled = true;
+    try {
+      const course = await Atelier.api('/api/courses', {
+        method: 'POST', body: Object.fromEntries(new FormData(e.target)),
+      });
+      window.location.href = `/courses/${course.id}`;
+    } catch (err) {
+      Atelier.toast(err.message, 'erreur');
+      btn.disabled = false;
+    }
+  });
+</script>
+{% endblock %}

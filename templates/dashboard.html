@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% from 'partials/fiche.html' import fiche_apercu, ligne_cours %}
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<section class="grid items-center gap-12 lg:grid-cols-[1fr_24rem]">
+  <div>
+    <h1 class="font-serif text-4xl font-semibold leading-tight sm:text-5xl">Votre pile du jour</h1>
+
+    {% if stats.due %}
+      <p class="mt-4 max-w-md text-lg text-nuit-600 dark:text-nuit-200">
+        {% if stats.due == 1 %}1 fiche attend d'être révisée.{% else %}{{ stats.due }} fiches attendent d'être révisées.{% endif %}
+        {% if stats.reviewed_today %}Vous en avez déjà revu {{ stats.reviewed_today }} aujourd'hui.{% endif %}
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="{{ url_for('pages.study') }}" class="btn btn-primary">Commencer la révision</a>
+        <a href="{{ url_for('pages.generate') }}" class="btn btn-secondary">Générer des fiches</a>
+      </div>
+    {% elif stats.cards %}
+      <p class="mt-4 max-w-md text-lg text-nuit-600 dark:text-nuit-200">
+        Tout est à jour. Les prochaines fiches reviendront au moment où vous risquez de les oublier.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="{{ url_for('pages.study', mode='toutes') }}" class="btn btn-primary">Réviser librement</a>
+        <a href="{{ url_for('pages.courses') }}" class="btn btn-secondary">Ajouter un cours</a>
+      </div>
+    {% else %}
+      <p class="mt-4 max-w-md text-lg text-nuit-600 dark:text-nuit-200">
+        Créez un cours, importez un chapitre (PDF, Markdown ou texte) et Ollama en tirera
+        les définitions, formules et théorèmes à mémoriser.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="{{ url_for('pages.courses') }}" class="btn btn-primary">Créer un cours</a>
+      </div>
+    {% endif %}
+
+    <dl class="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-nuit-100 pt-6 dark:border-nuit-800">
+      <div>
+        <dt class="text-sm text-nuit-500 dark:text-nuit-300">Cours</dt>
+        <dd class="font-serif text-2xl">{{ stats.courses }}</dd>
+      </div>
+      <div>
+        <dt class="text-sm text-nuit-500 dark:text-nuit-300">Fiches</dt>
+        <dd class="font-serif text-2xl">{{ stats.cards }}</dd>
+      </div>
+      <div>
+        <dt class="text-sm text-nuit-500 dark:text-nuit-300">Maîtrisées</dt>
+        <dd class="font-serif text-2xl text-emeraude-600 dark:text-emeraude-400">{{ stats.mastered }}</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="pile mx-auto w-full max-w-sm">
+    {% if next_card %}
+      {{ fiche_apercu(card_type_labels[next_card.card_type], next_card.course_title, next_card.question,
+                      'Prochaine fiche à revoir') }}
+    {% else %}
+      {{ fiche_apercu('Formule', 'Exemple', 'Que relie la formule $E = mc^2$ ?',
+                      'Vos fiches ressembleront à ceci') }}
+    {% endif %}
+  </div>
+</section>
+
+<section class="mt-20">
+  <div class="flex items-baseline justify-between gap-4">
+    <h2 class="font-serif text-2xl font-semibold">Mes cours</h2>
+    <a href="{{ url_for('pages.courses') }}" class="text-sm font-medium text-ambre-700 hover:underline dark:text-ambre-300">Tous les cours</a>
+  </div>
+  {% if courses %}
+    <ul class="mt-2 divide-y divide-nuit-100 dark:divide-nuit-800">
+      {% for course in courses[:6] %}{{ ligne_cours(course) }}{% endfor %}
+    </ul>
+  {% else %}
+    <p class="mt-4 text-nuit-500 dark:text-nuit-300">Aucun cours pour l'instant.</p>
+  {% endif %}
+</section>
+{% endblock %}

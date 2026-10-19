@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% block title %}Paramètres{% endblock %}
+
+{% block content %}
+<h1 class="font-serif text-4xl font-semibold">Paramètres</h1>
+
+<div class="mt-10 grid max-w-3xl gap-10">
+  <form id="form-reglages" class="space-y-8">
+    <section class="panneau space-y-5 p-6">
+      <div>
+        <h2 class="font-serif text-xl font-semibold">Moteur des fiches</h2>
+        <p class="mt-1 text-sm text-nuit-500 dark:text-nuit-300">
+          Moteur proposé par défaut dans le générateur. Vous pouvez toujours changer au moment de générer.
+        </p>
+      </div>
+      <div class="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Moteur par défaut">
+        {% for value, label in providers.items() %}
+        <label class="moteur">
+          <input type="radio" name="ai_provider" value="{{ value }}" class="sr-only" {{ 'checked' if settings.ai_provider == value }}>
+          <span class="font-semibold">{{ label }}</span>
+          <span class="text-sm text-nuit-500 dark:text-nuit-300">
+            {{ 'Gratuit et confidentiel : rien ne quitte l’ordinateur.' if value == 'ollama' else 'Plus précis. Compte dans les limites de votre abonnement Claude.' }}
+          </span>
+        </label>
+        {% endfor %}
+      </div>
+      <div>
+        <label class="label" for="reg-nombre">Fiches proposées par chapitre</label>
+        <input class="field w-32" id="reg-nombre" name="cards_per_chapter" type="number" min="1" max="60"
+               value="{{ settings.cards_per_chapter }}">
+      </div>
+    </section>
+
+    <section class="panneau space-y-5 p-6">
+      <div>
+        <h2 class="font-serif text-xl font-semibold">Ollama, sur votre Mac</h2>
+        <p class="mt-1 text-sm text-nuit-500 dark:text-nuit-300">
+          Vos cours ne sont envoyés à aucun service en ligne.
+        </p>
+      </div>
+      <div>
+        <label class="label" for="reg-url">Adresse d'Ollama</label>
+        <input class="field" id="reg-url" name="ollama_url" value="{{ settings.ollama_url }}" required>
+      </div>
+      <div>
+        <label class="label" for="reg-modele">Modèle par défaut</label>
+        <input class="field" id="reg-modele" name="ollama_model" value="{{ settings.ollama_model }}"
+               list="reg-modeles" required>
+        <datalist id="reg-modeles"></datalist>
+        <p class="hint" id="reg-modeles-info">Recherche des modèles installés…</p>
+      </div>
+      <p id="reg-resultat" class="text-sm" role="status"></p>
+    </section>
+
+    <section class="panneau space-y-5 p-6">
+      <div>
+        <h2 class="font-serif text-xl font-semibold">Claude, avec votre abonnement</h2>
+        <p class="mt-1 text-sm text-nuit-500 dark:text-nuit-300">
+          L'app passe par Claude Code installé sur votre Mac : pas de clé API, la génération compte dans les
+          limites de votre abonnement Pro ou Max. Le texte des chapitres est envoyé à Anthropic.
+        </p>
+      </div>
+      <div>
+        <label class="label" for="reg-claude-modele">Modèle par défaut</label>
+        <select class="field" id="reg-claude-modele" name="claude_model">
+          {% for id, label in claude_models %}
+            <option value="{{ id }}" {{ 'selected' if settings.claude_model == id }}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <p id="reg-claude-resultat" class="text-sm" role="status">Vérification de Claude Code…</p>
+      <details class="text-sm text-nuit-600 dark:text-nuit-200">
+        <summary class="cursor-pointer font-medium text-ambre-700 dark:text-ambre-300">Installer et connecter Claude Code</summary>
+        <div class="mt-3 space-y-2">
+          <p>Dans un terminal, installez Claude Code puis connectez-vous une fois avec votre compte Claude :</p>
+          <pre class="overflow-x-auto rounded-md bg-nuit-900 px-4 py-3 text-nuit-100"><code>curl -fsSL https://claude.ai/install.sh | bash
+claude</code></pre>
+          <p>Si une variable <code>ANTHROPIC_API_KEY</code> est définie sur votre Mac, l'app l'ignore pour
+             utiliser votre abonnement.</p>
+        </div>
+      </details>
+    </section>
+
+    <div class="flex flex-wrap gap-3">
+      <button class="btn btn-primary" type="submit">Enregistrer les paramètres</button>
+      <button class="btn btn-secondary" type="button" id="reg-tester">Tester les connexions</button>
+    </div>
+  </form>
+
+  <section class="panneau space-y-4 p-6">
+    <h2 class="font-serif text-xl font-semibold">Apparence</h2>
+    <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Thème">
+      {% for value, label in [('systeme', 'Comme le système'), ('clair', 'Clair'), ('sombre', 'Sombre')] %}
+        <button type="button" class="btn btn-secondary btn-sm" role="radio" data-theme-choice="{{ value }}">{{ label }}</button>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="space-y-2 text-sm text-nuit-600 dark:text-nuit-200">
+    <h2 class="font-serif text-xl font-semibold text-nuit-900 dark:text-nuit-50">Installer un modèle</h2>
+    <p>Dans un terminal, téléchargez un modèle puis rechargez cette page :</p>
+    <pre class="overflow-x-auto rounded-md bg-nuit-900 px-4 py-3 text-nuit-100"><code>ollama pull llama3.1
+ollama pull mistral
+ollama pull qwen2.5:7b</code></pre>
+    <p>Les modèles de 7–8 milliards de paramètres offrent un bon compromis pour extraire définitions et formules.</p>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  const { api, toast, setTheme, getTheme, refreshOllamaStatus, escapeHtml } = window.Atelier;
+  const form = document.getElementById('form-reglages');
+  const info = document.getElementById('reg-modeles-info');
+  const resultat = document.getElementById('reg-resultat');
+
+  async function verifier() {
+    const s = await refreshOllamaStatus();
+    if (!s || !s.available) {
+      info.textContent = "Ollama ne répond pas : saisissez le nom du modèle à la main.";
+      resultat.textContent = s ? s.error : '';
+      resultat.className = 'text-sm text-framboise-500';
+      return;
+    }
+    document.getElementById('reg-modeles').innerHTML =
+      s.models.map((m) => `<option value="${escapeHtml(m)}">`).join('');
+    info.textContent = s.models.length
+      ? `Installés : ${s.models.join(', ')}`
+      : "Aucun modèle installé. Utilisez « ollama pull » (voir plus bas).";
+    resultat.textContent = s.model_installed
+      ? `Connexion réussie. Le modèle ${s.model} est prêt.`
+      : `Ollama répond, mais le modèle ${s.model} n'est pas installé.`;
+    resultat.className = 'text-sm ' + (s.model_installed ? 'text-emeraude-600 dark:text-emeraude-400' : 'text-ambre-700 dark:text-ambre-300');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      await api('/api/settings', { method: 'PUT', body: Object.fromEntries(new FormData(form)) });
+      toast('Paramètres enregistrés.', 'succes');
+      verifier();
+    } catch (err) {
+      toast(err.message, 'erreur');
+    }
+  });
+  async function verifierClaude() {
+    const cible = document.getElementById('reg-claude-resultat');
+    try {
+      const c = await api('/api/claude/status');
+      if (c.available && c.subscription) {
+        cible.textContent = 'Claude Code est prêt et connecté avec votre abonnement.';
+        cible.className = 'text-sm text-emeraude-600 dark:text-emeraude-400';
+      } else if (c.available) {
+        cible.textContent = c.auth_method === 'api_key'
+          ? 'Claude Code est connecté avec une clé API : la génération sera facturée à l’usage.'
+          : 'Claude Code est prêt.';
+        cible.className = 'text-sm text-ambre-700 dark:text-ambre-300';
+      } else {
+        cible.textContent = c.error;
+        cible.className = 'text-sm text-framboise-500';
+      }
+    } catch (err) {
+      cible.textContent = err.message;
+      cible.className = 'text-sm text-framboise-500';
+    }
+  }
+
+  document.getElementById('reg-tester').addEventListener('click', () => { verifier(); verifierClaude(); });
+
+  const majTheme = () => document.querySelectorAll('[data-theme-choice]').forEach((b) => {
+    const on = b.dataset.themeChoice === getTheme();
+    b.setAttribute('aria-checked', String(on));
+    b.classList.toggle('btn-primary', on);
+    b.classList.toggle('btn-secondary', !on);
+  });
+  document.querySelectorAll('[data-theme-choice]').forEach((b) =>
+    b.addEventListener('click', () => { setTheme(b.dataset.themeChoice); majTheme(); }));
+  document.addEventListener('atelier:theme', majTheme);
+  majTheme();
+  verifier();
+  verifierClaude();
+})();
+</script>
+{% endblock %}

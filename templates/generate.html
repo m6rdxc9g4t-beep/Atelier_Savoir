@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}Générateur de fiches{% endblock %}
+
+{% block content %}
+<h1 class="font-serif text-4xl font-semibold">Générateur de fiches</h1>
+<p class="mt-2 max-w-2xl text-nuit-600 dark:text-nuit-200">
+  L'IA lit le chapitre et propose des fiches : définitions, formules, théorèmes et notions clés.
+  Relisez les propositions avant de les enregistrer.
+</p>
+
+{% if not courses %}
+  <div class="panneau mt-10 px-6 py-10 text-center">
+    <p class="font-serif text-xl">Il faut d'abord un cours et un chapitre.</p>
+    <a href="{{ url_for('pages.courses') }}" class="btn btn-primary mt-5">Créer un cours</a>
+  </div>
+{% else %}
+<form id="form-generation" class="panneau mt-10 space-y-5 p-5"
+      data-selected-course="{{ selected_course or '' }}" data-selected-chapter="{{ selected_chapter or '' }}"
+      data-default-provider="{{ settings.ai_provider }}"
+      data-default-ollama-model="{{ settings.ollama_model }}"
+      data-default-claude-model="{{ settings.claude_model }}">
+  <fieldset>
+    <legend class="label">Moteur</legend>
+    <div class="grid gap-3 sm:grid-cols-2" role="radiogroup">
+      <label class="moteur" data-moteur="ollama">
+        <input type="radio" name="provider" value="ollama" class="sr-only" {{ 'checked' if settings.ai_provider != 'claude' }}>
+        <span class="font-semibold">Ollama, sur votre Mac</span>
+        <span class="text-sm text-nuit-500 dark:text-nuit-300">Gratuit et confidentiel : rien ne quitte l'ordinateur.</span>
+        <span class="moteur-etat text-xs" data-etat-ollama></span>
+      </label>
+      <label class="moteur" data-moteur="claude">
+        <input type="radio" name="provider" value="claude" class="sr-only" {{ 'checked' if settings.ai_provider == 'claude' }}>
+        <span class="font-semibold">Claude, avec votre abonnement</span>
+        <span class="text-sm text-nuit-500 dark:text-nuit-300">Plus précis. Le texte du chapitre est envoyé à Anthropic.</span>
+        <span class="moteur-etat text-xs" data-etat-claude></span>
+      </label>
+    </div>
+  </fieldset>
+
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_8rem_auto] xl:items-end">
+    <div>
+      <label class="label" for="gen-cours">Cours</label>
+      <select class="field" id="gen-cours" required>
+        {% for c in courses %}<option value="{{ c.id }}">{{ c.title }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="label" for="gen-chapitre">Chapitre</label>
+      <select class="field" id="gen-chapitre" required></select>
+    </div>
+    <div>
+      <label class="label" for="gen-modele">Modèle</label>
+      <select class="field" id="gen-modele"></select>
+    </div>
+    <div>
+      <label class="label" for="gen-nombre">Fiches max</label>
+      <input class="field" id="gen-nombre" type="number" min="1" max="60" value="{{ settings.cards_per_chapter }}">
+    </div>
+    <button class="btn btn-primary md:col-span-2 xl:col-span-1" type="submit" id="gen-lancer">Générer les fiches</button>
+  </div>
+</form>
+<script>
+  window.CLAUDE_MODELS = {{ claude_models|tojson }};
+</script>
+
+<div id="gen-attente" class="mt-10 hidden items-center gap-3 text-nuit-600 dark:text-nuit-200" role="status">
+  <span class="plume text-ambre-500"></span>
+  <span id="gen-attente-texte">L'IA lit le chapitre.</span>
+</div>
+
+<section id="gen-resultats" class="mt-10 hidden" aria-labelledby="gen-titre">
+  <div class="flex flex-wrap items-baseline justify-between gap-3">
+    <h2 id="gen-titre" class="font-serif text-2xl font-semibold">Propositions</h2>
+    <p class="text-sm text-nuit-500 dark:text-nuit-300" id="gen-source"></p>
+  </div>
+  <p class="mt-1 text-sm text-nuit-500 dark:text-nuit-300">Corrigez ce qui doit l'être et décochez les fiches inutiles.</p>
+  <ol id="gen-liste" class="mt-6 space-y-5"></ol>
+
+  <div class="sticky bottom-4 mt-8 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-nuit-900 px-5 py-3 text-white shadow-xl dark:bg-nuit-800">
+    <span id="gen-compte">0 fiche sélectionnée</span>
+    <div class="flex gap-2">
+      <button class="btn btn-sm text-nuit-100 hover:bg-white/10" type="button" id="gen-relancer">Relancer</button>
+      <button class="btn btn-primary btn-sm" type="button" id="gen-enregistrer">Enregistrer les fiches</button>
+    </div>
+  </div>
+</section>
+
+<template id="gen-modele-fiche">
+  <li class="panneau p-4 sm:p-5" data-fiche>
+    <div class="flex flex-wrap items-center gap-3">
+      <label class="flex items-center gap-2 text-sm font-medium">
+        <input type="checkbox" class="h-4 w-4 accent-[#2A9C73]" data-garder checked> Garder
+      </label>
+      <select class="field w-auto py-1 text-sm" data-type aria-label="Type de fiche">
+        {% for key, label in card_type_labels.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="mt-3 grid gap-4 md:grid-cols-2">
+      <div>
+        <label class="label">Question</label>
+        <textarea class="field font-serif" rows="2" data-question></textarea>
+      </div>
+      <div>
+        <label class="label">Réponse</label>
+        <textarea class="field font-serif" rows="3" data-reponse></textarea>
+      </div>
+    </div>
+    <div class="math-scroll mt-3 grid gap-4 border-t border-dashed border-nuit-100 pt-3 font-serif text-[0.95rem] md:grid-cols-2 dark:border-nuit-800" data-apercu>
+      <p class="whitespace-pre-line" data-apercu-q></p>
+      <p class="whitespace-pre-line text-nuit-600 dark:text-nuit-200" data-apercu-r></p>
+    </div>
+  </li>
+</template>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/generate.js') }}"></script>
+{% endblock %}

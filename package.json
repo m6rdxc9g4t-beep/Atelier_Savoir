@@ -1,0 +1,12 @@
+{
+  "name": "atelier-savoir",
+  "private": true,
+  "description": "Outillage front d'Atelier Savoir (compilation Tailwind). Inutile pour simplement lancer l'application.",
+  "scripts": {
+    "css": "tailwindcss -i static/css/tailwind.src.css -o static/css/tailwind.css --minify",
+    "css:watch": "tailwindcss -i static/css/tailwind.src.css -o static/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

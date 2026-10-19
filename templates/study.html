@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Révision{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-2xl">
+  <form id="revision-options" class="flex flex-wrap items-end gap-3" data-course="{{ selected_course or '' }}">
+    <div class="min-w-[12rem] flex-1">
+      <label class="label" for="rev-cours">Cours</label>
+      <select class="field" id="rev-cours">
+        <option value="">Tous les cours</option>
+        {% for c in courses %}<option value="{{ c.id }}" {{ 'selected' if c.id == selected_course }}>{{ c.title }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="label" for="rev-mode">Fiches</label>
+      <select class="field" id="rev-mode">
+        <option value="dues" {{ 'selected' if mode == 'dues' }}>À revoir aujourd'hui</option>
+        <option value="toutes" {{ 'selected' if mode == 'toutes' }}>Toutes (révision libre)</option>
+      </select>
+    </div>
+  </form>
+
+  <div class="mt-8 flex items-center gap-4 text-sm text-nuit-500 dark:text-nuit-300">
+    <div class="maitrise flex-1"><span id="rev-progression" style="width: 0%"></span></div>
+    <span id="rev-compteur" class="tabular-nums">0 / 0</span>
+  </div>
+
+  {# ------------------------------------------------------------ la fiche #}
+  <div id="rev-zone" class="mt-6 hidden">
+    <div class="fiche" id="rev-fiche">
+      <div class="fiche-inner" role="button" tabindex="0" aria-live="polite"
+           aria-label="Fiche : appuyez sur Espace pour la retourner">
+        <div class="fiche-face fiche-recto fiche-lignes">
+          <div class="fiche-entete">
+            <span class="fiche-type" data-type></span>
+            <span class="truncate" data-contexte></span>
+          </div>
+          <div class="fiche-texte" data-question></div>
+          <p class="fiche-indice">Touchez la fiche pour la retourner (ou Espace)</p>
+        </div>
+        <div class="fiche-face fiche-verso fiche-lignes">
+          <div class="fiche-entete">
+            <span class="fiche-type">Réponse</span>
+            <span class="truncate" data-question-rappel></span>
+          </div>
+          <div class="fiche-texte" data-reponse></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="rev-notes" class="invisible mt-8 grid grid-cols-3 gap-3" aria-label="Évaluez votre réponse">
+      <button type="button" class="note note-revoir" data-note="a_revoir">À revoir <kbd>1</kbd></button>
+      <button type="button" class="note note-correct" data-note="correct">Correct <kbd>2</kbd></button>
+      <button type="button" class="note note-maitrise" data-note="maitrise">Maîtrisé <kbd>3</kbd></button>
+    </div>
+  </div>
+
+  {# ------------------------------------------------- vide / bilan de séance #}
+  <div id="rev-vide" class="mt-10 hidden text-center">
+    <p class="font-serif text-2xl" data-titre></p>
+    <p class="mt-2 text-nuit-500 dark:text-nuit-300" data-texte></p>
+    <div class="mt-6 flex flex-wrap justify-center gap-3" data-actions></div>
+  </div>
+
+  <div id="rev-bilan" class="mt-10 hidden">
+    <h1 class="text-center font-serif text-3xl font-semibold">Séance terminée</h1>
+    <dl class="mx-auto mt-8 grid max-w-md grid-cols-3 gap-4 text-center">
+      <div><dt class="text-sm text-framboise-500">À revoir</dt><dd class="font-serif text-3xl" data-bilan="a_revoir">0</dd></div>
+      <div><dt class="text-sm text-nuit-500 dark:text-nuit-300">Correct</dt><dd class="font-serif text-3xl" data-bilan="correct">0</dd></div>
+      <div><dt class="text-sm text-emeraude-600 dark:text-emeraude-400">Maîtrisé</dt><dd class="font-serif text-3xl" data-bilan="maitrise">0</dd></div>
+    </dl>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a class="btn btn-primary" href="{{ url_for('pages.dashboard') }}">Retour au tableau de bord</a>
+      <button class="btn btn-secondary" type="button" data-recommencer>Nouvelle séance</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>window.CARD_TYPE_LABELS = {{ card_type_labels|tojson }};</script>
+<script src="{{ url_for('static', filename='js/study.js') }}"></script>
+{% endblock %}
