@@ -1,5 +1,5 @@
 {% from 'partials/icons.html' import icon, brand %}<!doctype html>
-<html lang="fr">
+<html lang="fr" data-atelier-app="savoir">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,21 +28,21 @@
   <script defer src="{{ url_for('static', filename='vendor/katex/katex.min.js') }}"></script>
   <script defer src="{{ url_for('static', filename='vendor/katex/contrib/auto-render.min.js') }}"></script>
 </head>
-<body class="min-h-screen bg-papier font-sans text-nuit-900 antialiased dark:bg-nuit-950 dark:text-nuit-50">
+<body class="min-h-screen font-sans text-texte antialiased">
 
   {# Barre mobile #}
-  <header class="sticky top-0 z-30 flex items-center justify-between border-b border-nuit-100 bg-papier/95 px-4 py-3 backdrop-blur lg:hidden dark:border-nuit-800 dark:bg-nuit-950/95">
+  <header class="barre-mobile sticky top-0 z-30 flex items-center justify-between px-4 py-3 backdrop-blur lg:hidden">
     {{ brand() }}
     <button type="button" data-sidebar-toggle aria-controls="sidebar" aria-expanded="false"
-            class="rounded-md px-3 py-1.5 text-sm font-medium ring-1 ring-nuit-200 dark:ring-nuit-700">Menu</button>
+            class="rounded-md px-3 py-1.5 text-sm font-medium ring-1 ring-bord-doux">Menu</button>
   </header>
 
   <div class="lg:flex">
     <aside id="sidebar"
-           class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-nuit-900 text-nuit-100 transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 dark:bg-[#0A1320]">
+           class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0">
       <div class="px-6 pb-6 pt-7">
-        <span class="text-white">{{ brand() }}</span>
-        <p class="mt-3 text-sm text-nuit-300">Vos cours, vos fiches, en local.</p>
+        {{ brand() }}
+        <p class="mt-3 text-sm text-doux">Vos cours, vos fiches, en local.</p>
       </div>
 
       <nav class="flex-1 space-y-0.5 px-3" aria-label="Navigation principale">
@@ -57,18 +57,18 @@
         {% endfor %}
       </nav>
 
-      <div class="space-y-4 border-t border-white/10 px-6 py-5 text-sm">
-        <p class="flex items-center gap-2 text-nuit-300" data-ollama-status>
-          <span class="h-2 w-2 rounded-full bg-nuit-500" data-ollama-dot></span>
+      <div class="space-y-4 border-t border-ligne px-6 py-5 text-sm">
+        <p class="flex items-center gap-2 text-doux" data-ollama-status>
+          <span class="h-2 w-2 rounded-full bg-doux" data-ollama-dot></span>
           <span data-ollama-label>Ollama : vérification…</span>
         </p>
         <button type="button" data-theme-cycle
-                class="w-full rounded-md px-3 py-2 text-left text-nuit-200 ring-1 ring-white/10 hover:bg-white/5">
+                class="w-full rounded-md px-3 py-2 text-left text-texte ring-1 ring-bord-doux hover:bg-survol">
           Thème : <span data-theme-label>système</span>
         </button>
       </div>
     </aside>
-    <div class="fixed inset-0 z-30 hidden bg-nuit-950/50 lg:hidden" data-sidebar-backdrop></div>
+    <div class="fixed inset-0 z-30 hidden bg-black/50 lg:hidden" data-sidebar-backdrop></div>
 
     <main class="min-w-0 flex-1 px-4 pb-16 pt-6 sm:px-8 lg:px-12 lg:pt-12">
       <div class="mx-auto max-w-5xl">

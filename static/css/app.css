@@ -1,48 +1,60 @@
 /* Atelier Savoir — styles complémentaires à Tailwind.
-   Pièce maîtresse : la fiche bristol (lignes bleues, filet ambré) de l'écran de révision. */
+   Pièce maîtresse : la fiche bristol (lignes et filet violets) de l'écran de révision.
 
-:root {
-  --nuit-950: #0C1624;
-  --nuit-900: #13202F;
-  --nuit-800: #1A283D;
-  --nuit-700: #22344F;
-  --nuit-300: #8AA0C2;
-  --nuit-100: #DCE4F0;
+   Charte « néon monochrome » de la suite (static/brand/atelier-brand.css, data-atelier-app="savoir") :
+   toute l'app est dans sa couleur signature, le violet #9B5DE5, en clair comme en sombre.
+   Fonds, surfaces, traits, textes et halos viennent des jetons --atelier-* du fichier de marque,
+   qui changent de valeur avec la classe .dark : on les branche ici sur les variables de l'app.
+   Couleurs de sens inchangées : ambre (en cours, avertissement), émeraude (maîtrise), framboise (à revoir). */
+
+:root,
+.dark {
   --ambre: #E8B04A;
   --ambre-fonce: #B57A1C;
   --emeraude: #2A9C73;
   --framboise: #C2566B;
 
-  --surface: #FFFFFF;
-  --bordure: #DCE4F0;
-  --texte-doux: #4E6283;
-  --focus: #D9962A;
+  --fond: var(--atelier-bg);
+  --surface: var(--atelier-surface);
+  --surface-2: var(--atelier-surface-2);
+  --bordure: var(--atelier-border-soft);
+  --texte: var(--atelier-text);
+  --texte-doux: var(--atelier-muted);
 
-  --fiche-fond: #FFFFFF;
-  --fiche-ligne: #D3DEEE;
-  --fiche-filet: #E8B04A;
-  --fiche-ombre: 0 1px 0 #DCE4F0, 0 18px 40px -22px rgba(19, 32, 47, .45);
+  --fiche-fond: var(--atelier-surface);
+  --fiche-ligne: var(--atelier-line);
+  --fiche-filet: var(--atelier-signature);
+  --fiche-ombre: inset 0 0 0 1px var(--atelier-border), var(--atelier-glow);
   --fiche-pas: 2rem;          /* interligne = espacement des lignes */
   --fiche-entete: 4rem;       /* hauteur de la zone au-dessus du filet */
 }
 
-.dark {
-  --surface: #13202F;
-  --bordure: #22344F;
-  --texte-doux: #8AA0C2;
-  --focus: #F2CB78;
+html { scroll-behavior: smooth; }
+body {
+  font-feature-settings: "kern", "liga";
+  /* --atelier-backdrop contient tailles et positions (« 0 0 / 32px 32px ») : il n'est valide que
+     dans le raccourci `background`, pas dans `background-image`. */
+  background: var(--atelier-backdrop);
+  background-color: var(--atelier-bg);
+  background-attachment: fixed;
+  color: var(--atelier-text);
+}
+/* Titre de page : halo néon (discret en clair, plus marqué en sombre) */
+main h1 { text-shadow: var(--atelier-text-glow); }
 
-  --fiche-fond: #182538;
-  --fiche-ligne: rgba(138, 160, 194, .16);
-  --fiche-filet: #D9962A;
-  --fiche-ombre: 0 1px 0 #22344F, 0 24px 48px -24px rgba(0, 0, 0, .7);
+/* Barre latérale et barre mobile */
+#sidebar {
+  background: var(--atelier-sidebar);
+  color: var(--atelier-text);
+  border-right: 1px solid var(--atelier-border-soft);
+}
+.barre-mobile {
+  background: color-mix(in oklab, var(--atelier-bg) 94%, transparent);
+  border-bottom: 1px solid var(--atelier-border-soft);
 }
 
-html { scroll-behavior: smooth; }
-body { font-feature-settings: "kern", "liga"; }
-
 :focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2px solid var(--atelier-signature);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -54,17 +66,18 @@ body { font-feature-settings: "kern", "liga"; }
   gap: .75rem;
   padding: .6rem .75rem;
   border-radius: 6px;
-  color: #B6C5DD;
+  color: var(--atelier-muted);
   font-size: .95rem;
   font-weight: 500;
   transition: background-color .15s, color .15s;
 }
-.nav-link:hover { background: rgba(255, 255, 255, .05); color: #fff; }
+.nav-link:hover { background: var(--atelier-signature-faint); color: var(--atelier-text); }
 .nav-link.is-active {
-  background: rgba(232, 176, 74, .12);
-  color: #F2CB78;
-  box-shadow: inset 3px 0 0 var(--ambre);
+  color: var(--atelier-text);
+  background: var(--atelier-signature-soft);
+  box-shadow: inset 3px 0 0 var(--atelier-signature), 0 0 14px -4px var(--atelier-signature);
 }
+.nav-link.is-active svg { color: var(--atelier-ink); }
 #sidebar.is-open { transform: translateX(0); }
 
 /* --------------------------------------------------------------- boutons */
@@ -82,10 +95,24 @@ body { font-feature-settings: "kern", "liga"; }
   cursor: pointer;
 }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn-primary { background: var(--ambre); color: var(--nuit-950); }
-.btn-primary:hover:not(:disabled) { background: #F2CB78; }
-.btn-secondary { background: transparent; box-shadow: inset 0 0 0 1px var(--bordure); }
-.btn-secondary:hover:not(:disabled) { background: rgba(138, 160, 194, .12); }
+/* Bouton principal : plein en clair, contour néon en sombre (comme .atelier-btn-primary du kit) */
+.btn-primary {
+  background: var(--atelier-signature);
+  color: var(--atelier-signature-contrast);
+  box-shadow: inset 0 0 0 1px var(--atelier-signature);
+}
+.btn-primary:hover:not(:disabled),
+.btn-primary:focus-visible { box-shadow: inset 0 0 0 1px var(--atelier-signature), var(--atelier-signature-glow); }
+.dark .btn-primary { background: var(--atelier-signature-soft); color: var(--atelier-ink); }
+.btn-secondary {
+  background: var(--atelier-surface);
+  color: var(--atelier-text);
+  box-shadow: inset 0 0 0 1px var(--atelier-border-soft);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--atelier-signature-faint);
+  box-shadow: inset 0 0 0 1px var(--atelier-border);
+}
 .btn-danger { color: var(--framboise); }
 .btn-danger:hover { background: rgba(194, 86, 107, .1); }
 .btn-sm { padding: .35rem .65rem; font-size: .85rem; }
@@ -94,27 +121,63 @@ body { font-feature-settings: "kern", "liga"; }
 .field {
   width: 100%;
   border-radius: 6px;
-  border: 1px solid var(--bordure);
-  background: var(--surface);
+  border: 1px solid var(--atelier-border-soft);
+  background: var(--atelier-field);
   padding: .6rem .75rem;
   font-size: .95rem;
   color: inherit;
 }
-.field::placeholder { color: var(--texte-doux); opacity: .75; }
-.field:focus { outline: none; border-color: var(--ambre); box-shadow: 0 0 0 3px rgba(232, 176, 74, .22); }
+.field::placeholder { color: var(--atelier-muted); opacity: .75; }
+.field:focus {
+  outline: none;
+  border-color: var(--atelier-signature);
+  box-shadow: var(--atelier-focus);
+}
 textarea.field { line-height: 1.55; resize: vertical; }
 .label { display: block; margin-bottom: .35rem; font-size: .875rem; font-weight: 500; }
-.hint { font-size: .8rem; color: var(--texte-doux); margin-top: .3rem; }
+.hint { font-size: .8rem; color: var(--atelier-muted); margin-top: .3rem; }
 
+/* Cartes et panneaux : surface, trait néon, halo */
 .panneau {
-  background: var(--surface);
-  border: 1px solid var(--bordure);
+  background-color: var(--atelier-surface);
+  border: 1px solid var(--atelier-border);
   border-radius: 8px;
+  box-shadow: var(--atelier-glow);
+}
+
+/* Blocs de code et texte extrait : surface teintée */
+.bloc {
+  background: var(--atelier-surface-2);
+  color: var(--atelier-text);
+  box-shadow: inset 0 0 0 1px var(--atelier-border-soft);
+}
+
+/* Liens et repères en couleur signature (version lisible pour du texte) */
+.lien-signature { color: var(--atelier-ink); }
+
+/* Barre flottante du générateur : élément actif, halo renforcé */
+.barre-actions {
+  background: var(--atelier-surface-2);
+  color: var(--atelier-text);
+  border: 1px solid var(--atelier-border);
+  box-shadow: var(--atelier-glow-strong);
+}
+
+/* Bulle de notification (info) : surface sélection, trait néon */
+.toast-info {
+  background: var(--atelier-surface-3);
+  color: var(--atelier-text);
+  box-shadow: inset 0 0 0 1px var(--atelier-border), var(--atelier-glow-strong);
 }
 
 /* Barre de maîtrise (émeraude) */
-.maitrise { height: 4px; border-radius: 2px; background: var(--bordure); overflow: hidden; }
+.maitrise { height: 4px; border-radius: 2px; background: var(--atelier-line); overflow: hidden; }
 .maitrise > span { display: block; height: 100%; background: var(--emeraude); border-radius: 2px; }
+/* Progression de la séance (donnée clé, pas un niveau de maîtrise) : couleur signature */
+.maitrise.progression > span {
+  background: var(--atelier-signature);
+  box-shadow: 0 0 10px -1px var(--atelier-signature);
+}
 
 /* Choix du moteur d'IA */
 .moteur {
@@ -124,24 +187,39 @@ textarea.field { line-height: 1.55; resize: vertical; }
   gap: .2rem;
   padding: .85rem 1rem;
   border-radius: 8px;
-  border: 1.5px solid var(--bordure);
+  border: 1.5px solid var(--atelier-border-soft);
   cursor: pointer;
   transition: border-color .15s, background-color .15s;
 }
-.moteur:hover { border-color: var(--nuit-300); }
-.moteur:has(input:checked) { border-color: var(--ambre); background: rgba(232, 176, 74, .08); }
-.moteur:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
-.moteur-etat { margin-top: .25rem; color: var(--texte-doux); }
+.moteur:hover { border-color: var(--atelier-border); background: var(--atelier-signature-faint); }
+.moteur:has(input:checked) {
+  border-color: var(--atelier-signature);
+  background: var(--atelier-signature-soft);
+  box-shadow: var(--atelier-signature-glow);
+}
+.moteur:has(input:focus-visible) { outline: 2px solid var(--atelier-signature); outline-offset: 2px; }
+.moteur-etat { margin-top: .25rem; color: var(--atelier-muted); }
 .moteur-etat.is-ok { color: var(--emeraude); }
 .moteur-etat.is-ko { color: var(--framboise); }
 
+/* Onglets (import de chapitre) : sélecteur segmenté, onglet actif en sélection */
+.onglets {
+  background: var(--atelier-surface-2);
+  box-shadow: inset 0 0 0 1px var(--atelier-border-soft);
+}
+.onglets [role="tab"] { color: var(--atelier-muted); }
+.onglets [role="tab"][aria-selected="true"] {
+  color: var(--atelier-text);
+  background: var(--atelier-surface-3);
+}
+
 /* Zone de dépôt de fichier */
 .depot {
-  border: 1.5px dashed var(--bordure);
+  border: 1.5px dashed var(--atelier-border-soft);
   border-radius: 8px;
   transition: border-color .15s, background-color .15s;
 }
-.depot.is-over { border-color: var(--ambre); background: rgba(232, 176, 74, .07); }
+.depot.is-over { border-color: var(--atelier-signature); background: var(--atelier-signature-soft); }
 
 /* ---------------------------------------------------- la fiche bristol */
 .fiche-lignes {
@@ -185,7 +263,7 @@ textarea.field { line-height: 1.55; resize: vertical; }
   backface-visibility: hidden;
 }
 .fiche-verso { transform: rotateY(180deg); }
-.fiche-inner:focus-visible { outline: 2px solid rgba(232, 176, 74, .55); outline-offset: 6px; border-radius: 8px; }
+.fiche-inner:focus-visible { outline: 2px solid var(--atelier-signature); outline-offset: 6px; border-radius: 8px; }
 
 .fiche-entete {
   height: var(--fiche-entete);
@@ -198,8 +276,7 @@ textarea.field { line-height: 1.55; resize: vertical; }
   font-size: .85rem;
   color: var(--texte-doux);
 }
-.fiche-type { color: var(--ambre-fonce); font-weight: 600; }
-.dark .fiche-type { color: var(--ambre); }
+.fiche-type { color: var(--atelier-ink); font-weight: 600; }
 
 .fiche-texte {
   flex: 1;
@@ -239,15 +316,15 @@ textarea.field { line-height: 1.55; resize: vertical; }
   border-radius: 8px;
   font-weight: 600;
   border: 1.5px solid transparent;
+  background-color: var(--atelier-surface);
   transition: background-color .15s, transform .1s;
 }
 .note:active { transform: translateY(1px); }
 .note kbd { font: 500 .72rem/1 "Instrument Sans", system-ui, sans-serif; opacity: .7; }
 .note-revoir   { color: var(--framboise); border-color: rgba(194, 86, 107, .45); }
 .note-revoir:hover   { background: rgba(194, 86, 107, .1); }
-.note-correct  { color: #3F5880; border-color: rgba(63, 88, 128, .4); }
-.dark .note-correct { color: #B6C5DD; border-color: rgba(138, 160, 194, .4); }
-.note-correct:hover  { background: rgba(138, 160, 194, .14); }
+.note-correct  { color: var(--atelier-text); border-color: var(--atelier-border-soft); }
+.note-correct:hover  { background: var(--atelier-signature-faint); }
 .note-maitrise { color: var(--emeraude); border-color: rgba(42, 156, 115, .45); }
 .dark .note-maitrise { color: #45B98D; }
 .note-maitrise:hover { background: rgba(42, 156, 115, .1); }
@@ -255,7 +332,7 @@ textarea.field { line-height: 1.55; resize: vertical; }
 /* Pastilles de statut */
 .statut { display: inline-flex; align-items: center; gap: .35rem; font-size: .8rem; color: var(--texte-doux); }
 .statut::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; }
-.statut-nouvelle  { color: #5E78A0; }
+.statut-nouvelle  { color: var(--atelier-muted); }
 .statut-a_revoir  { color: var(--framboise); }
 .statut-en_cours  { color: var(--ambre-fonce); }
 .dark .statut-en_cours { color: var(--ambre); }

@@ -17,8 +17,6 @@
       form.querySelectorAll('[role="tab"]').forEach((tab) => {
         const on = tab.dataset.mode === mode;
         tab.setAttribute('aria-selected', String(on));
-        tab.classList.toggle('bg-white', on);
-        tab.classList.toggle('dark:bg-nuit-800', on);
         tab.classList.toggle('shadow-sm', on);
       });
       form.querySelectorAll('[data-only]').forEach((el) => { el.hidden = el.dataset.only !== mode; });

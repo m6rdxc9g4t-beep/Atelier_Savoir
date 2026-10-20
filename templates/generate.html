@@ -3,7 +3,7 @@
 
 {% block content %}
 <h1 class="font-serif text-4xl font-semibold">Générateur de fiches</h1>
-<p class="mt-2 max-w-2xl text-nuit-600 dark:text-nuit-200">
+<p class="mt-2 max-w-2xl text-doux">
   L'IA lit le chapitre et propose des fiches : définitions, formules, théorèmes et notions clés.
   Relisez les propositions avant de les enregistrer.
 </p>
@@ -25,13 +25,13 @@
       <label class="moteur" data-moteur="ollama">
         <input type="radio" name="provider" value="ollama" class="sr-only" {{ 'checked' if settings.ai_provider != 'claude' }}>
         <span class="font-semibold">Ollama, sur votre Mac</span>
-        <span class="text-sm text-nuit-500 dark:text-nuit-300">Gratuit et confidentiel : rien ne quitte l'ordinateur.</span>
+        <span class="text-sm text-doux">Gratuit et confidentiel : rien ne quitte l'ordinateur.</span>
         <span class="moteur-etat text-xs" data-etat-ollama></span>
       </label>
       <label class="moteur" data-moteur="claude">
         <input type="radio" name="provider" value="claude" class="sr-only" {{ 'checked' if settings.ai_provider == 'claude' }}>
         <span class="font-semibold">Claude, avec votre abonnement</span>
-        <span class="text-sm text-nuit-500 dark:text-nuit-300">Plus précis. Le texte du chapitre est envoyé à Anthropic.</span>
+        <span class="text-sm text-doux">Plus précis. Le texte du chapitre est envoyé à Anthropic.</span>
         <span class="moteur-etat text-xs" data-etat-claude></span>
       </label>
     </div>
@@ -63,23 +63,23 @@
   window.CLAUDE_MODELS = {{ claude_models|tojson }};
 </script>
 
-<div id="gen-attente" class="mt-10 hidden items-center gap-3 text-nuit-600 dark:text-nuit-200" role="status">
-  <span class="plume text-ambre-500"></span>
+<div id="gen-attente" class="mt-10 hidden items-center gap-3 text-doux" role="status">
+  <span class="plume text-encre"></span>
   <span id="gen-attente-texte">L'IA lit le chapitre.</span>
 </div>
 
 <section id="gen-resultats" class="mt-10 hidden" aria-labelledby="gen-titre">
   <div class="flex flex-wrap items-baseline justify-between gap-3">
     <h2 id="gen-titre" class="font-serif text-2xl font-semibold">Propositions</h2>
-    <p class="text-sm text-nuit-500 dark:text-nuit-300" id="gen-source"></p>
+    <p class="text-sm text-doux" id="gen-source"></p>
   </div>
-  <p class="mt-1 text-sm text-nuit-500 dark:text-nuit-300">Corrigez ce qui doit l'être et décochez les fiches inutiles.</p>
+  <p class="mt-1 text-sm text-doux">Corrigez ce qui doit l'être et décochez les fiches inutiles.</p>
   <ol id="gen-liste" class="mt-6 space-y-5"></ol>
 
-  <div class="sticky bottom-4 mt-8 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-nuit-900 px-5 py-3 text-white shadow-xl dark:bg-nuit-800">
+  <div class="sticky bottom-4 mt-8 flex flex-wrap items-center justify-between gap-3 barre-actions rounded-lg px-5 py-3">
     <span id="gen-compte">0 fiche sélectionnée</span>
     <div class="flex gap-2">
-      <button class="btn btn-sm text-nuit-100 hover:bg-white/10" type="button" id="gen-relancer">Relancer</button>
+      <button class="btn btn-sm text-texte hover:bg-survol" type="button" id="gen-relancer">Relancer</button>
       <button class="btn btn-primary btn-sm" type="button" id="gen-enregistrer">Enregistrer les fiches</button>
     </div>
   </div>
@@ -105,9 +105,9 @@
         <textarea class="field font-serif" rows="3" data-reponse></textarea>
       </div>
     </div>
-    <div class="math-scroll mt-3 grid gap-4 border-t border-dashed border-nuit-100 pt-3 font-serif text-[0.95rem] md:grid-cols-2 dark:border-nuit-800" data-apercu>
+    <div class="math-scroll mt-3 grid gap-4 border-t border-dashed border-ligne pt-3 font-serif text-[0.95rem] md:grid-cols-2" data-apercu>
       <p class="whitespace-pre-line" data-apercu-q></p>
-      <p class="whitespace-pre-line text-nuit-600 dark:text-nuit-200" data-apercu-r></p>
+      <p class="whitespace-pre-line text-doux" data-apercu-r></p>
     </div>
   </li>
 </template>
