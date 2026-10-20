@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1 class="font-serif text-4xl font-semibold">Mes cours</h1>
-<p class="mt-2 max-w-xl text-nuit-600 dark:text-nuit-200">
+<p class="mt-2 max-w-xl text-doux">
   Un cours regroupe les chapitres d'une matière. Chaque chapitre importé peut être transformé en fiches.
 </p>
 
@@ -12,13 +12,13 @@
   <section aria-labelledby="liste-cours">
     <h2 id="liste-cours" class="sr-only">Liste des cours</h2>
     {% if courses %}
-      <ul class="divide-y divide-nuit-100 border-t border-nuit-100 dark:divide-sombre-bord dark:border-sombre-bord">
+      <ul class="divide-y divide-ligne border-t border-ligne">
         {% for course in courses %}{{ ligne_cours(course) }}{% endfor %}
       </ul>
     {% else %}
       <div class="panneau px-6 py-10 text-center">
         <p class="font-serif text-xl">Votre bibliothèque est vide.</p>
-        <p class="mt-2 text-sm text-nuit-500 dark:text-sombre-doux">Créez votre premier cours avec le formulaire.</p>
+        <p class="mt-2 text-sm text-doux">Créez votre premier cours avec le formulaire.</p>
       </div>
     {% endif %}
   </section>
@@ -38,7 +38,7 @@
         <datalist id="matieres">{% for s in subjects %}<option value="{{ s }}">{% endfor %}</datalist>
       </div>
       <div>
-        <label class="label" for="cours-description">Description <span class="font-normal text-nuit-400">(facultatif)</span></label>
+        <label class="label" for="cours-description">Description <span class="font-normal text-doux">(facultatif)</span></label>
         <textarea class="field" id="cours-description" name="description" rows="3"></textarea>
       </div>
       <button class="btn btn-primary w-full" type="submit">Créer le cours</button>

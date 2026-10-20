@@ -7,21 +7,22 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        nuit: {
-          50: '#EEF2F8', 100: '#DCE4F0', 200: '#B6C5DD', 300: '#8AA0C2', 400: '#5E78A0',
-          500: '#3F5880', 600: '#2C4366', 700: '#22344F', 800: '#1A283D', 900: '#13202F', 950: '#0C1624',
-        },
         ambre: { 100: '#FBEBC8', 300: '#F2CB78', 400: '#E8B04A', 500: '#D9962A', 600: '#B57A1C', 700: '#8A5C12' },
         emeraude: { 100: '#D3F0E4', 300: '#7FD3B0', 400: '#45B98D', 500: '#2A9C73', 600: '#1F7D5B', 700: '#175E45' },
         framboise: { 100: '#F7DDE2', 400: '#D9768A', 500: '#C2566B', 600: '#A03F54' },
-        papier: '#F4F6FA',
-        // Thème sombre « néon holographique » (charte Atelier) : bleu nuit, bordures teintées de cyan.
-        sombre: {
-          fond: '#06111F', surface: '#0A1B2E', eleve: '#10283F', texte: '#E6F7FF', doux: '#8DB4CC', bord: '#17405C',
-        },
-        // Couleur signature de l'app (violet de Savoir, posé par data-atelier-app dans atelier-brand.css).
-        // « texte » : variante lisible pour du texte (mélangée à l'encre en clair, éclaircie en sombre).
-        signature: { DEFAULT: 'var(--atelier-signature)', texte: 'var(--signature-texte)' },
+        // Charte « néon monochrome » : structure de l'app dérivée de la couleur signature (violet #9B5DE5).
+        // Jetons --atelier-* de static/brand/atelier-brand.css, qui changent de valeur en thème sombre (.dark) :
+        // pas de variante dark: à écrire. Pas de modificateur d'opacité (/50) sur ces couleurs.
+        fond: 'var(--atelier-bg)',
+        surface: { DEFAULT: 'var(--atelier-surface)', 2: 'var(--atelier-surface-2)' },
+        selection: 'var(--atelier-surface-3)',
+        survol: 'var(--atelier-signature-faint)',
+        texte: 'var(--atelier-text)',
+        doux: 'var(--atelier-muted)',
+        encre: 'var(--atelier-ink)',
+        bord: { DEFAULT: 'var(--atelier-border)', doux: 'var(--atelier-border-soft)' },
+        ligne: 'var(--atelier-line)',
+        signature: 'var(--atelier-signature)',
       },
       fontFamily: {
         serif: ['Literata', 'Georgia', 'serif'],

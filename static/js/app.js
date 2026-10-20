@@ -26,7 +26,7 @@
     const el = document.getElementById('toast');
     if (!el) return;
     const styles = {
-      info: 'bg-nuit-900 text-white dark:bg-nuit-100 dark:text-nuit-950',
+      info: 'bg-selection text-texte',
       succes: 'bg-emeraude-600 text-white',
       erreur: 'bg-framboise-600 text-white',
     };

@@ -8,7 +8,7 @@
     <h1 class="font-serif text-4xl font-semibold leading-tight sm:text-5xl">Votre pile du jour</h1>
 
     {% if stats.due %}
-      <p class="mt-4 max-w-md text-lg text-nuit-600 dark:text-nuit-200">
+      <p class="mt-4 max-w-md text-lg text-doux">
         {% if stats.due == 1 %}1 fiche attend d'être révisée.{% else %}{{ stats.due }} fiches attendent d'être révisées.{% endif %}
         {% if stats.reviewed_today %}Vous en avez déjà revu {{ stats.reviewed_today }} aujourd'hui.{% endif %}
       </p>
@@ -17,7 +17,7 @@
         <a href="{{ url_for('pages.generate') }}" class="btn btn-secondary">Générer des fiches</a>
       </div>
     {% elif stats.cards %}
-      <p class="mt-4 max-w-md text-lg text-nuit-600 dark:text-nuit-200">
+      <p class="mt-4 max-w-md text-lg text-doux">
         Tout est à jour. Les prochaines fiches reviendront au moment où vous risquez de les oublier.
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
@@ -25,7 +25,7 @@
         <a href="{{ url_for('pages.courses') }}" class="btn btn-secondary">Ajouter un cours</a>
       </div>
     {% else %}
-      <p class="mt-4 max-w-md text-lg text-nuit-600 dark:text-nuit-200">
+      <p class="mt-4 max-w-md text-lg text-doux">
         Créez un cours, importez un chapitre (PDF, Markdown ou texte) et Ollama en tirera
         les définitions, formules et théorèmes à mémoriser.
       </p>
@@ -34,17 +34,17 @@
       </div>
     {% endif %}
 
-    <dl class="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-nuit-100 pt-6 dark:border-sombre-bord">
+    <dl class="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-ligne pt-6">
       <div>
-        <dt class="text-sm text-nuit-500 dark:text-sombre-doux">Cours</dt>
+        <dt class="text-sm text-doux">Cours</dt>
         <dd class="font-serif text-2xl">{{ stats.courses }}</dd>
       </div>
       <div>
-        <dt class="text-sm text-nuit-500 dark:text-sombre-doux">Fiches</dt>
+        <dt class="text-sm text-doux">Fiches</dt>
         <dd class="font-serif text-2xl">{{ stats.cards }}</dd>
       </div>
       <div>
-        <dt class="text-sm text-nuit-500 dark:text-sombre-doux">Maîtrisées</dt>
+        <dt class="text-sm text-doux">Maîtrisées</dt>
         <dd class="font-serif text-2xl text-emeraude-600 dark:text-emeraude-400">{{ stats.mastered }}</dd>
       </div>
     </dl>
@@ -67,11 +67,11 @@
     <a href="{{ url_for('pages.courses') }}" class="text-sm font-medium lien-signature hover:underline">Tous les cours</a>
   </div>
   {% if courses %}
-    <ul class="mt-2 divide-y divide-nuit-100 dark:divide-sombre-bord">
+    <ul class="mt-2 divide-y divide-ligne">
       {% for course in courses[:6] %}{{ ligne_cours(course) }}{% endfor %}
     </ul>
   {% else %}
-    <p class="mt-4 text-nuit-500 dark:text-sombre-doux">Aucun cours pour l'instant.</p>
+    <p class="mt-4 text-doux">Aucun cours pour l'instant.</p>
   {% endif %}
 </section>
 {% endblock %}

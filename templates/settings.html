@@ -9,7 +9,7 @@
     <section class="panneau space-y-5 p-6">
       <div>
         <h2 class="font-serif text-xl font-semibold">Moteur des fiches</h2>
-        <p class="mt-1 text-sm text-nuit-500 dark:text-sombre-doux">
+        <p class="mt-1 text-sm text-doux">
           Moteur proposé par défaut dans le générateur. Vous pouvez toujours changer au moment de générer.
         </p>
       </div>
@@ -18,7 +18,7 @@
         <label class="moteur">
           <input type="radio" name="ai_provider" value="{{ value }}" class="sr-only" {{ 'checked' if settings.ai_provider == value }}>
           <span class="font-semibold">{{ label }}</span>
-          <span class="text-sm text-nuit-500 dark:text-sombre-doux">
+          <span class="text-sm text-doux">
             {{ 'Gratuit et confidentiel : rien ne quitte l’ordinateur.' if value == 'ollama' else 'Plus précis. Compte dans les limites de votre abonnement Claude.' }}
           </span>
         </label>
@@ -34,7 +34,7 @@
     <section class="panneau space-y-5 p-6">
       <div>
         <h2 class="font-serif text-xl font-semibold">Ollama, sur votre Mac</h2>
-        <p class="mt-1 text-sm text-nuit-500 dark:text-sombre-doux">
+        <p class="mt-1 text-sm text-doux">
           Vos cours ne sont envoyés à aucun service en ligne.
         </p>
       </div>
@@ -55,7 +55,7 @@
     <section class="panneau space-y-5 p-6">
       <div>
         <h2 class="font-serif text-xl font-semibold">Claude, avec votre abonnement</h2>
-        <p class="mt-1 text-sm text-nuit-500 dark:text-sombre-doux">
+        <p class="mt-1 text-sm text-doux">
           L'app passe par Claude Code installé sur votre Mac : pas de clé API, la génération compte dans les
           limites de votre abonnement Pro ou Max. Le texte des chapitres est envoyé à Anthropic.
         </p>
@@ -69,11 +69,11 @@
         </select>
       </div>
       <p id="reg-claude-resultat" class="text-sm" role="status">Vérification de Claude Code…</p>
-      <details class="text-sm text-nuit-600 dark:text-nuit-200">
+      <details class="text-sm text-doux">
         <summary class="cursor-pointer font-medium lien-signature">Installer et connecter Claude Code</summary>
         <div class="mt-3 space-y-2">
           <p>Dans un terminal, installez Claude Code puis connectez-vous une fois avec votre compte Claude :</p>
-          <pre class="overflow-x-auto rounded-md bg-nuit-900 px-4 py-3 text-nuit-100"><code>curl -fsSL https://claude.ai/install.sh | bash
+          <pre class="overflow-x-auto bloc rounded-md px-4 py-3"><code>curl -fsSL https://claude.ai/install.sh | bash
 claude</code></pre>
           <p>Si une variable <code>ANTHROPIC_API_KEY</code> est définie sur votre Mac, l'app l'ignore pour
              utiliser votre abonnement.</p>
@@ -96,10 +96,10 @@ claude</code></pre>
     </div>
   </section>
 
-  <section class="space-y-2 text-sm text-nuit-600 dark:text-nuit-200">
-    <h2 class="font-serif text-xl font-semibold text-nuit-900 dark:text-sombre-texte">Installer un modèle</h2>
+  <section class="space-y-2 text-sm text-doux">
+    <h2 class="font-serif text-xl font-semibold text-texte">Installer un modèle</h2>
     <p>Dans un terminal, téléchargez un modèle puis rechargez cette page :</p>
-    <pre class="overflow-x-auto rounded-md bg-nuit-900 px-4 py-3 text-nuit-100"><code>ollama pull llama3.1
+    <pre class="overflow-x-auto bloc rounded-md px-4 py-3"><code>ollama pull llama3.1
 ollama pull mistral
 ollama pull qwen2.5:7b</code></pre>
     <p>Les modèles de 7–8 milliards de paramètres offrent un bon compromis pour extraire définitions et formules.</p>

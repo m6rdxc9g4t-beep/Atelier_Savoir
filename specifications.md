@@ -18,7 +18,7 @@
 ---
 
 ## 3. Design UI / UX & Visuels
-- **Palette de couleurs :** Charte « néon holographique 3D » de la suite Atelier : bleu nuit profond, structure en cyan électrique (halos et reflets en mode sombre), couleur signature violette `#9B5DE5` (réflexion) pour les actions et repères ; ambre pour les fiches en cours, vert émeraude pour les notions maîtrisées, framboise pour les fiches à revoir.
+- **Palette de couleurs :** Charte « néon monochrome » de la suite Atelier : toute l'application est dans sa couleur signature, le violet `#9B5DE5` (réflexion), décliné en transparences — fond teinté avec fine grille, cartes cerclées d'un trait néon avec halo. Sombre : fond quasi noir teinté de violet, bouton principal en contour néon. Clair : fond très clair teinté, cartes blanches, bouton principal plein. Couleurs de sens : ambre pour les fiches en cours, vert émeraude pour les notions maîtrisées, framboise pour les fiches à revoir.
 - **Navigation principale (Sidebar) :**
   - Tableau de bord / Accueil (`/`)
   - Mes Cours & Documents (`/courses`)
