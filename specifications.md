@@ -18,7 +18,7 @@
 ---
 
 ## 3. Design UI / UX & Visuels
-- **Palette de couleurs :** Ambiance studieuse et apaisante (Bleu nuit profond, accents ambre/doré pour la mémorisation, vert émeraude pour les notions maîtrisées).
+- **Palette de couleurs :** Charte « néon holographique 3D » de la suite Atelier : bleu nuit profond, structure en cyan électrique (halos et reflets en mode sombre), couleur signature violette `#9B5DE5` (réflexion) pour les actions et repères ; ambre pour les fiches en cours, vert émeraude pour les notions maîtrisées, framboise pour les fiches à revoir.
 - **Navigation principale (Sidebar) :**
   - Tableau de bord / Accueil (`/`)
   - Mes Cours & Documents (`/courses`)

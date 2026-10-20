@@ -15,6 +15,13 @@ module.exports = {
         emeraude: { 100: '#D3F0E4', 300: '#7FD3B0', 400: '#45B98D', 500: '#2A9C73', 600: '#1F7D5B', 700: '#175E45' },
         framboise: { 100: '#F7DDE2', 400: '#D9768A', 500: '#C2566B', 600: '#A03F54' },
         papier: '#F4F6FA',
+        // Thème sombre « néon holographique » (charte Atelier) : bleu nuit, bordures teintées de cyan.
+        sombre: {
+          fond: '#06111F', surface: '#0A1B2E', eleve: '#10283F', texte: '#E6F7FF', doux: '#8DB4CC', bord: '#17405C',
+        },
+        // Couleur signature de l'app (violet de Savoir, posé par data-atelier-app dans atelier-brand.css).
+        // « texte » : variante lisible pour du texte (mélangée à l'encre en clair, éclaircie en sombre).
+        signature: { DEFAULT: 'var(--atelier-signature)', texte: 'var(--signature-texte)' },
       },
       fontFamily: {
         serif: ['Literata', 'Georgia', 'serif'],

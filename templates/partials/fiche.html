@@ -16,8 +16,8 @@
 <li class="grid gap-3 py-5 sm:grid-cols-[1fr_12rem_auto] sm:items-center sm:gap-6">
   <div class="min-w-0">
     <a href="{{ url_for('pages.course_detail', course_id=course.id) }}"
-       class="font-serif text-lg font-medium hover:text-ambre-600 dark:hover:text-ambre-300">{{ course.title }}</a>
-    <p class="mt-0.5 flex flex-wrap gap-x-4 text-sm text-nuit-500 dark:text-nuit-300">
+       class="font-serif text-lg font-medium hover:text-signature-texte">{{ course.title }}</a>
+    <p class="mt-0.5 flex flex-wrap gap-x-4 text-sm text-nuit-500 dark:text-sombre-doux">
       {% if course.subject %}<span>{{ course.subject }}</span>{% endif %}
       <span>{{ course.chapter_count|pluriel('chapitre') }}</span>
       <span>{{ course.card_count|pluriel('fiche') }}</span>
@@ -26,7 +26,7 @@
   <div>
     <div class="maitrise" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ pct }}"
          aria-label="Maîtrise de {{ course.title }}"><span style="width: {{ pct }}%"></span></div>
-    <p class="mt-1.5 text-xs text-nuit-500 dark:text-nuit-300">
+    <p class="mt-1.5 text-xs text-nuit-500 dark:text-sombre-doux">
       {{ course.mastered_count }} / {{ course.card_count }} maîtrisées
     </p>
   </div>

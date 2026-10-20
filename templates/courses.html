@@ -12,13 +12,13 @@
   <section aria-labelledby="liste-cours">
     <h2 id="liste-cours" class="sr-only">Liste des cours</h2>
     {% if courses %}
-      <ul class="divide-y divide-nuit-100 border-t border-nuit-100 dark:divide-nuit-800 dark:border-nuit-800">
+      <ul class="divide-y divide-nuit-100 border-t border-nuit-100 dark:divide-sombre-bord dark:border-sombre-bord">
         {% for course in courses %}{{ ligne_cours(course) }}{% endfor %}
       </ul>
     {% else %}
       <div class="panneau px-6 py-10 text-center">
         <p class="font-serif text-xl">Votre bibliothèque est vide.</p>
-        <p class="mt-2 text-sm text-nuit-500 dark:text-nuit-300">Créez votre premier cours avec le formulaire.</p>
+        <p class="mt-2 text-sm text-nuit-500 dark:text-sombre-doux">Créez votre premier cours avec le formulaire.</p>
       </div>
     {% endif %}
   </section>

@@ -1,5 +1,12 @@
 /* Atelier Savoir — styles complémentaires à Tailwind.
-   Pièce maîtresse : la fiche bristol (lignes bleues, filet ambré) de l'écran de révision. */
+   Pièce maîtresse : la fiche bristol (lignes bleues, filet violet) de l'écran de révision.
+
+   Charte « néon holographique 3D » (static/brand/atelier-brand.css, data-atelier-app="savoir") :
+   - couleur signature violette (--atelier-signature) : bouton principal, entrée de navigation active,
+     liens, filet et type de la fiche, barre de progression de la séance ;
+   - base cyan commune (--atelier-neon) : anneau de focus, halos et reflets des panneaux en sombre ;
+   - couleurs de sens inchangées : ambre (en cours, avertissement), émeraude (maîtrise), framboise (à revoir).
+   Les jetons --atelier-glow / --atelier-glass valent « none » en clair : utilisables sans condition. */
 
 :root {
   --nuit-950: #0C1624;
@@ -15,31 +22,56 @@
 
   --surface: #FFFFFF;
   --bordure: #DCE4F0;
+  --texte: #13202F;
   --texte-doux: #4E6283;
-  --focus: #D9962A;
+  /* Cyan de la suite, foncé en clair pour rester visible sur fond blanc */
+  --focus: var(--atelier-neon-deep);
+  /* Texte ou icône fine en signature : mélangé à l'encre en clair pour rester lisible */
+  --signature-texte: color-mix(in oklab, var(--atelier-signature) 62%, var(--texte));
 
   --fiche-fond: #FFFFFF;
   --fiche-ligne: #D3DEEE;
-  --fiche-filet: #E8B04A;
+  --fiche-filet: var(--atelier-signature);
   --fiche-ombre: 0 1px 0 #DCE4F0, 0 18px 40px -22px rgba(19, 32, 47, .45);
   --fiche-pas: 2rem;          /* interligne = espacement des lignes */
   --fiche-entete: 4rem;       /* hauteur de la zone au-dessus du filet */
 }
 
 .dark {
-  --surface: #13202F;
-  --bordure: #22344F;
-  --texte-doux: #8AA0C2;
-  --focus: #F2CB78;
+  /* Palette sombre de la suite : bleu nuit, bordures teintées de cyan */
+  --fond: #06111F;
+  --surface: #0A1B2E;
+  --surface-elevee: #10283F;
+  --bordure: #17405C;
+  --texte: #E6F7FF;
+  --texte-doux: #8DB4CC;
+  --focus: var(--atelier-neon);
+  --signature-texte: var(--atelier-signature-light);
 
-  --fiche-fond: #182538;
-  --fiche-ligne: rgba(138, 160, 194, .16);
-  --fiche-filet: #D9962A;
-  --fiche-ombre: 0 1px 0 #22344F, 0 24px 48px -24px rgba(0, 0, 0, .7);
+  --fiche-fond: #0D2136;
+  --fiche-ligne: color-mix(in oklab, var(--atelier-neon) 13%, transparent);
+  --fiche-filet: var(--atelier-signature-light);
+  --fiche-ombre: var(--atelier-glow), 0 24px 48px -24px rgba(0, 0, 0, .8);
 }
 
 html { scroll-behavior: smooth; }
 body { font-feature-settings: "kern", "liga"; }
+
+/* Fond de page en sombre : léger halo cyan en haut, sans gêner la lecture */
+.dark body {
+  background-image: radial-gradient(120% 60% at 50% -10%, color-mix(in oklab, var(--atelier-neon) 10%, transparent), transparent 60%);
+  background-attachment: fixed;
+}
+/* Titre de page : halo néon discret en sombre (« none » en clair) */
+main h1 { text-shadow: var(--atelier-text-glow); }
+
+/* Barre latérale et barre mobile : verre et halo cyan en sombre */
+#sidebar {
+  background-image: var(--atelier-glass);
+  box-shadow: var(--atelier-glow);
+}
+.dark #sidebar { border-right: 1px solid var(--bordure); }
+.barre-mobile { box-shadow: var(--atelier-glow); }
 
 :focus-visible {
   outline: 2px solid var(--focus);
@@ -61,9 +93,10 @@ body { font-feature-settings: "kern", "liga"; }
 }
 .nav-link:hover { background: rgba(255, 255, 255, .05); color: #fff; }
 .nav-link.is-active {
-  background: rgba(232, 176, 74, .12);
-  color: #F2CB78;
-  box-shadow: inset 3px 0 0 var(--ambre);
+  /* La barre latérale est sombre dans les deux thèmes : signature éclaircie */
+  background: var(--atelier-signature-soft);
+  color: var(--atelier-signature-light);
+  box-shadow: inset 3px 0 0 var(--atelier-signature);
 }
 #sidebar.is-open { transform: translateX(0); }
 
@@ -82,8 +115,12 @@ body { font-feature-settings: "kern", "liga"; }
   cursor: pointer;
 }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn-primary { background: var(--ambre); color: var(--nuit-950); }
-.btn-primary:hover:not(:disabled) { background: #F2CB78; }
+.btn-primary { background: var(--atelier-signature); color: var(--atelier-signature-contrast); }
+.btn-primary:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--atelier-signature) 86%, white);
+  box-shadow: var(--atelier-signature-glow);
+}
+.btn-primary:focus-visible { box-shadow: var(--atelier-signature-glow); }
 .btn-secondary { background: transparent; box-shadow: inset 0 0 0 1px var(--bordure); }
 .btn-secondary:hover:not(:disabled) { background: rgba(138, 160, 194, .12); }
 .btn-danger { color: var(--framboise); }
@@ -101,20 +138,40 @@ body { font-feature-settings: "kern", "liga"; }
   color: inherit;
 }
 .field::placeholder { color: var(--texte-doux); opacity: .75; }
-.field:focus { outline: none; border-color: var(--ambre); box-shadow: 0 0 0 3px rgba(232, 176, 74, .22); }
+.field:focus {
+  outline: none;
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--focus) 24%, transparent);
+}
 textarea.field { line-height: 1.55; resize: vertical; }
 .label { display: block; margin-bottom: .35rem; font-size: .875rem; font-weight: 500; }
 .hint { font-size: .8rem; color: var(--texte-doux); margin-top: .3rem; }
 
 .panneau {
-  background: var(--surface);
+  background-color: var(--surface);
+  background-image: var(--atelier-glass);
   border: 1px solid var(--bordure);
   border-radius: 8px;
+  box-shadow: var(--atelier-glow);
+}
+
+/* Liens et repères en couleur signature (lisibles en clair comme en sombre) */
+.lien-signature { color: var(--signature-texte); }
+
+/* Barre flottante du générateur : élément actif, halo renforcé en sombre */
+.barre-actions { box-shadow: 0 20px 25px -5px rgb(0 0 0 / .1), 0 8px 10px -6px rgb(0 0 0 / .1); }
+.dark .barre-actions {
+  background-color: var(--surface-elevee);
+  background-image: var(--atelier-glass);
+  box-shadow: var(--atelier-glow-strong);
 }
 
 /* Barre de maîtrise (émeraude) */
 .maitrise { height: 4px; border-radius: 2px; background: var(--bordure); overflow: hidden; }
 .maitrise > span { display: block; height: 100%; background: var(--emeraude); border-radius: 2px; }
+/* Progression de la séance (donnée clé, pas un niveau de maîtrise) : couleur signature */
+.maitrise.progression > span { background: var(--atelier-signature); }
+.dark .maitrise.progression > span { box-shadow: 0 0 10px -1px var(--atelier-signature); }
 
 /* Choix du moteur d'IA */
 .moteur {
@@ -129,11 +186,19 @@ textarea.field { line-height: 1.55; resize: vertical; }
   transition: border-color .15s, background-color .15s;
 }
 .moteur:hover { border-color: var(--nuit-300); }
-.moteur:has(input:checked) { border-color: var(--ambre); background: rgba(232, 176, 74, .08); }
+.moteur:has(input:checked) {
+  border-color: var(--atelier-signature);
+  background: var(--atelier-signature-soft);
+  box-shadow: var(--atelier-signature-glow);
+}
 .moteur:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
 .moteur-etat { margin-top: .25rem; color: var(--texte-doux); }
 .moteur-etat.is-ok { color: var(--emeraude); }
 .moteur-etat.is-ko { color: var(--framboise); }
+
+/* Onglets (import de chapitre) : onglet actif en signature */
+.onglets [role="tab"][aria-selected="true"] { color: var(--signature-texte); }
+.dark .onglets [role="tab"][aria-selected="true"] { background-color: var(--atelier-signature-soft); }
 
 /* Zone de dépôt de fichier */
 .depot {
@@ -141,7 +206,7 @@ textarea.field { line-height: 1.55; resize: vertical; }
   border-radius: 8px;
   transition: border-color .15s, background-color .15s;
 }
-.depot.is-over { border-color: var(--ambre); background: rgba(232, 176, 74, .07); }
+.depot.is-over { border-color: var(--atelier-signature); background: var(--atelier-signature-soft); }
 
 /* ---------------------------------------------------- la fiche bristol */
 .fiche-lignes {
@@ -185,7 +250,7 @@ textarea.field { line-height: 1.55; resize: vertical; }
   backface-visibility: hidden;
 }
 .fiche-verso { transform: rotateY(180deg); }
-.fiche-inner:focus-visible { outline: 2px solid rgba(232, 176, 74, .55); outline-offset: 6px; border-radius: 8px; }
+.fiche-inner:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 8px; }
 
 .fiche-entete {
   height: var(--fiche-entete);
@@ -198,8 +263,7 @@ textarea.field { line-height: 1.55; resize: vertical; }
   font-size: .85rem;
   color: var(--texte-doux);
 }
-.fiche-type { color: var(--ambre-fonce); font-weight: 600; }
-.dark .fiche-type { color: var(--ambre); }
+.fiche-type { color: var(--signature-texte); font-weight: 600; }
 
 .fiche-texte {
   flex: 1;

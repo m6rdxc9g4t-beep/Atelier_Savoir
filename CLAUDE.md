@@ -19,5 +19,11 @@ Contexte de référence : `specifications.md` (produit, design) et `instructions
   dans `services/flashcard_generator.py`. Ollama reste le moteur par défaut (100 % local).
 - Moteur Claude : jamais de clé API (retirer `ANTHROPIC_API_KEY` de l'environnement), aucun outil (`--tools ""`),
   lancement depuis un dossier vide.
-- Couleurs : `nuit` (fond), `ambre` (mémorisation, actions), `emeraude` (maîtrise), `framboise` (à revoir).
+- Charte « néon holographique 3D » de la suite : `static/brand/atelier-brand.css` est une copie exacte
+  (ne pas l'éditer ici) ; `data-atelier-app="savoir"` sur `<html>` pose la couleur signature violette `#9B5DE5`.
+- Couleurs : `nuit` (fond clair / barre latérale), `sombre-*` (thème sombre : bleu nuit, bordures cyan),
+  signature violette (`signature` / `--atelier-signature` : bouton principal, navigation active, liens, filet
+  de la fiche, progression de séance ; `signature-texte` pour du texte), cyan `--atelier-neon` (focus, halos
+  en sombre). Couleurs de sens inchangées : `ambre` (en cours, avertissement), `emeraude` (maîtrise),
+  `framboise` (à revoir).
 - La fiche bristol (`.fiche-lignes` dans `static/css/app.css`) est l'élément signature : ne pas la banaliser.
