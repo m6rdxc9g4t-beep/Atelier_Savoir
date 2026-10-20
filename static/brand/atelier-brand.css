@@ -113,7 +113,8 @@
   --atelier-text-glow: 0 0 14px color-mix(in oklab, var(--atelier-signature) 35%, transparent);
   --atelier-focus: 0 0 0 3px color-mix(in oklab, var(--atelier-signature) 30%, transparent);
 
-  /* Fond de page : fine grille + lueur en haut (à poser en background-image sur le fond de l'app). */
+  /* Fond de page : fine grille + lueur en haut. Uniquement dans le raccourci :
+     background: var(--atelier-backdrop), var(--atelier-bg); (voir .atelier-backdrop) */
   --atelier-backdrop:
     radial-gradient(80% 60% at 50% 0%, color-mix(in oklab, var(--atelier-signature) 12%, transparent), transparent 70%),
     linear-gradient(color-mix(in oklab, var(--atelier-signature) 7%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
@@ -176,9 +177,12 @@
 /* ---------------------------------------------------------------------------
    4. Classes prêtes à l'emploi (facultatives) — reproduisent la maquette validée.
    --------------------------------------------------------------------------- */
+/* --atelier-backdrop contient des tailles de motif (« 0 0 / 32px 32px ») : il ne s'emploie QUE dans le
+   raccourci `background`, jamais dans `background-image`. Forme à utiliser :
+     background: var(--atelier-backdrop), var(--atelier-bg);
+     background-attachment: fixed; */
 .atelier-backdrop {
-  background-color: var(--atelier-bg);
-  background-image: var(--atelier-backdrop);
+  background: var(--atelier-backdrop), var(--atelier-bg);
   background-attachment: fixed;
 }
 
