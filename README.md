@@ -90,9 +90,9 @@ Atelier_Savoir/
 │   └── settings_service.py # Réglages persistants et fabrique du client Ollama
 ├── templates/              # Jinja + Tailwind (base, tableau de bord, cours, générateur, révision…)
 ├── static/
-│   ├── css/                # app.css (composants, fiche bristol), tailwind.css (compilé), fonts.css
+│   ├── css/                # app.css (composants, fiche bristol), tailwind.css (compilé)
 │   ├── js/                 # app.js (commun), course.js, generate.js, study.js
-│   ├── fonts/              # Literata, Instrument Sans (SIL OFL)
+│   ├── brand/              # Marque commune de la suite (copie verbatim) : atelier-brand.css, atelier-theme.js, Inter (SIL OFL)
 │   └── vendor/katex/       # Rendu des formules LaTeX
 ├── tests/test_app.py       # Tests pytest (Ollama simulé)
 ├── instance/               # savoir.db (ignoré par Git)
