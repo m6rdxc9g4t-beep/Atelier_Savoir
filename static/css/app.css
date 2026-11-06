@@ -1,246 +1,469 @@
 /* Atelier Savoir — styles complémentaires à Tailwind.
-   Pièce maîtresse : la fiche bristol (lignes et filet violets) de l'écran de révision.
 
-   Charte « néon monochrome » de la suite (static/brand/atelier-brand.css, data-atelier-app="savoir") :
-   toute l'app est dans sa couleur signature, le violet #9B5DE5, en clair comme en sombre.
-   Fonds, surfaces, traits, textes et halos viennent des jetons --atelier-* du fichier de marque,
-   qui changent de valeur avec la classe .dark : on les branche ici sur les variables de l'app.
-   Couleurs de sens inchangées : ambre (en cours, avertissement), émeraude (maîtrise), framboise (à revoir). */
+   Charte v2 « Linear » de la suite (static/brand/atelier-brand.css, data-atelier-app="savoir") :
+   structure neutre commune en gris froids (clair et sombre), plate au repos, traits de 1 px, Inter.
+   La signature de Savoir (#a853c1) ne sert qu'à l'accent : bouton principal, sélection, focus, liens,
+   progression de la séance. Fonds, surfaces, traits et textes viennent des jetons --atelier-*.
+   Couleurs de sens inchangées : ambre (en cours), émeraude (maîtrise), framboise (à revoir).
+   Pièce maîtresse : la fiche bristol (.fiche-lignes) de l'écran de révision. */
 
-:root,
-.dark {
+:root {
   --ambre: #E8B04A;
   --ambre-fonce: #B57A1C;
   --emeraude: #2A9C73;
+  --emeraude-clair: #45B98D;
   --framboise: #C2566B;
 
-  --fond: var(--atelier-bg);
-  --surface: var(--atelier-surface);
-  --surface-2: var(--atelier-surface-2);
-  --bordure: var(--atelier-border-soft);
-  --texte: var(--atelier-text);
-  --texte-doux: var(--atelier-muted);
+  /* Échelle typographique : méta 11.5 · petit 12 · base 13 · fort 14 · titre 15 · page 20 · écran 24 */
+  --t-meta: 11.5px;
+  --t-small: 12px;
+  --t-base: 13px;
+  --t-strong: 14px;
+  --t-title: 15px;
+  --t-page: 20px;
+  --t-screen: 24px;
 
-  --fiche-fond: var(--atelier-surface);
-  --fiche-ligne: var(--atelier-line);
-  --fiche-filet: var(--atelier-signature);
-  --fiche-ombre: inset 0 0 0 1px var(--atelier-border), var(--atelier-glow);
+  --side-w: 232px;
+  --top-h: 44px;
+  --row-h: 40px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Fiche bristol */
   --fiche-pas: 2rem;          /* interligne = espacement des lignes */
-  --fiche-entete: 4rem;       /* hauteur de la zone au-dessus du filet */
+  --fiche-entete: 2.75rem;    /* hauteur de la zone au-dessus du filet */
+  --fiche-ligne: color-mix(in oklab, var(--atelier-line) 80%, transparent);
+
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f636c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
+}
+.dark {
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23969aa3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
+}
+/* Téléphone : base 14 px */
+@media (max-width: 767px) {
+  :root {
+    --t-meta: 12px;
+    --t-small: 13px;
+    --t-base: 14px;
+    --t-strong: 15px;
+    --t-title: 16px;
+    --fiche-pas: 1.875rem;
+  }
 }
 
+/* ------------------------------------------------------------------ base */
 html { scroll-behavior: smooth; }
 body {
-  font-feature-settings: "kern", "liga";
-  /* --atelier-backdrop contient tailles et positions (« 0 0 / 32px 32px ») : il n'est valide que
-     dans le raccourci `background`, pas dans `background-image`. */
-  background: var(--atelier-backdrop);
-  background-color: var(--atelier-bg);
-  background-attachment: fixed;
+  margin: 0;
+  background: var(--atelier-bg);
   color: var(--atelier-text);
+  font: 400 var(--t-base)/1.45 var(--atelier-font);
+  font-feature-settings: "cv11", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-/* Titre de page : halo néon (discret en clair, plus marqué en sombre) */
-main h1 { text-shadow: var(--atelier-text-glow); }
-
-/* Barre latérale et barre mobile */
-#sidebar {
-  background: var(--atelier-sidebar);
-  color: var(--atelier-text);
-  border-right: 1px solid var(--atelier-border-soft);
-}
-.barre-mobile {
-  background: color-mix(in oklab, var(--atelier-bg) 94%, transparent);
-  border-bottom: 1px solid var(--atelier-border-soft);
-}
-
+::selection { background: color-mix(in oklab, var(--atelier-signature) 30%, transparent); color: var(--atelier-text); }
 :focus-visible {
   outline: 2px solid var(--atelier-signature);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: var(--atelier-radius-sm);
 }
+* { scrollbar-width: thin; scrollbar-color: var(--atelier-border-soft) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--atelier-border-soft); border-radius: 10px; border: 3px solid var(--atelier-bg); }
+::-webkit-scrollbar-track { background: transparent; }
+a { text-underline-offset: 3px; text-decoration-thickness: 1px; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--atelier-signature); }
+.num, .tabular-nums { font-variant-numeric: tabular-nums; }
+code, pre, kbd { font-family: var(--atelier-font-mono); }
 
-/* ------------------------------------------------------------ navigation */
-.nav-link {
+/* Icônes trait (Lucide, licence ISC) : 16 px, trait 1.75 */
+.ic { width: 16px; height: 16px; flex: none; }
+.ic-sm { width: 14px; height: 14px; }
+
+/* --------------------------------------------------------------- coquille */
+.coquille {
+  display: grid;
+  grid-template-columns: var(--side-w) minmax(0, 1fr);
+  min-height: 100vh;
+  /* La colonne de la barre latérale garde son fond sur toute la hauteur de la page */
+  background: linear-gradient(to right, var(--atelier-sidebar) calc(var(--side-w) - 1px), var(--atelier-line) 0 var(--side-w), transparent 0);
+}
+.laterale {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 8px 8px;
+  background: var(--atelier-sidebar);
+  border-right: 1px solid var(--atelier-line);
+}
+.laterale__marque { display: flex; align-items: center; gap: 8px; padding: 2px 4px 0; }
+.laterale__marque .atelier-brand { padding: 2px 4px; margin-left: -4px; }
+.laterale__marque .atelier-brand__tile { width: 1.375rem; height: 1.375rem; border-radius: var(--atelier-radius-sm); }
+.laterale__marque .atelier-brand__tile svg { width: 0.875rem; height: 0.875rem; }
+.laterale__devise { margin: 2px 8px 12px; font-size: var(--t-small); color: var(--atelier-faint); }
+
+.nav { display: flex; flex-direction: column; gap: 1px; }
+.nav-item {
   display: flex;
   align-items: center;
-  gap: .75rem;
-  padding: .6rem .75rem;
-  border-radius: 6px;
-  color: var(--atelier-muted);
-  font-size: .95rem;
+  gap: 10px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: var(--atelier-radius-md);
   font-weight: 500;
-  transition: background-color .15s, color .15s;
+  color: color-mix(in oklab, var(--atelier-text) 82%, var(--atelier-muted));
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 120ms, color 120ms;
 }
-.nav-link:hover { background: var(--atelier-signature-faint); color: var(--atelier-text); }
-.nav-link.is-active {
-  color: var(--atelier-text);
-  background: var(--atelier-signature-soft);
-  box-shadow: inset 3px 0 0 var(--atelier-signature), 0 0 14px -4px var(--atelier-signature);
-}
-.nav-link.is-active svg { color: var(--atelier-ink); }
-#sidebar.is-open { transform: translateX(0); }
+.nav-item .ic { color: var(--atelier-faint); }
+.nav-item:hover { background: var(--atelier-surface-2); color: var(--atelier-text); }
+.nav-item[aria-current="page"] { background: var(--atelier-surface-3); color: var(--atelier-text); }
+.nav-item[aria-current="page"] .ic { color: var(--atelier-text); }
 
-/* --------------------------------------------------------------- boutons */
+.laterale__pied {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 4px 4px;
+}
+
+/* Témoin d'Ollama : muet quand tout va bien (règle du témoin muet) */
+.etat { display: inline-flex; align-items: center; gap: 7px; font-size: var(--t-small); color: var(--atelier-muted); min-width: 0; }
+.etat::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--atelier-faint); }
+.etat[data-etat="ok"]::before { display: none; }
+.etat[data-etat="partiel"] { color: var(--atelier-warn); }
+.etat[data-etat="partiel"]::before { background: var(--atelier-warn); box-shadow: none; }
+.etat[data-etat="panne"] { color: var(--atelier-down); font-weight: 500; }
+.etat[data-etat="panne"]::before { background: var(--atelier-down); box-shadow: none; }
+.etat > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.principal { min-width: 0; display: flex; flex-direction: column; }
+.barre-haute {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--top-h);
+  padding: 0 20px;
+  background: color-mix(in oklab, var(--atelier-bg) 88%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--atelier-line);
+}
+.barre-haute h1 { margin: 0; font-size: var(--t-base); font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fil { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.fil a { color: var(--atelier-muted); font-weight: 500; text-decoration: none; white-space: nowrap; }
+.fil a:hover { color: var(--atelier-text); }
+.fil .ic { color: var(--atelier-faint); }
+
+.contenu { width: 100%; max-width: 72rem; padding: 24px 20px 64px; }
+.contenu--etroit { max-width: 46rem; margin-inline: auto; }
+
+/* Téléphone : la barre latérale devient un bandeau, la navigation une rangée de pastilles */
+@media (max-width: 767px) {
+  .coquille { display: block; background: none; }
+  .laterale {
+    position: static;
+    height: auto;
+    overflow: visible;
+    padding: 10px 0 0;
+    gap: 8px;
+    border-right: 0;
+    border-bottom: 1px solid var(--atelier-line);
+  }
+  .laterale__marque { padding: 0 12px 0 14px; }
+  .laterale__devise { display: none; }
+  .nav {
+    flex-direction: row;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 0 14px 10px;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-item { height: 32px; padding: 0 12px; border: 1px solid var(--atelier-border-soft); border-radius: 999px; }
+  .nav-item .ic { display: none; }
+  .nav-item[aria-current="page"] { border-color: transparent; }
+  .laterale__pied { display: none; }
+  .barre-haute { padding: 0 16px; }
+  .contenu { padding: 20px 16px 56px; }
+}
+
+/* ---------------------------------------------------------------- boutons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
-  padding: .6rem 1rem;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: .95rem;
-  line-height: 1.2;
-  transition: background-color .15s, box-shadow .15s, opacity .15s;
-  cursor: pointer;
-}
-.btn:disabled { opacity: .5; cursor: not-allowed; }
-/* Bouton principal : plein en clair, contour néon en sombre (comme .atelier-btn-primary du kit) */
-.btn-primary {
-  background: var(--atelier-signature);
-  color: var(--atelier-signature-contrast);
-  box-shadow: inset 0 0 0 1px var(--atelier-signature);
-}
-.btn-primary:hover:not(:disabled),
-.btn-primary:focus-visible { box-shadow: inset 0 0 0 1px var(--atelier-signature), var(--atelier-signature-glow); }
-.dark .btn-primary { background: var(--atelier-signature-soft); color: var(--atelier-ink); }
-.btn-secondary {
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--atelier-border-soft);
+  border-radius: var(--atelier-radius-md);
   background: var(--atelier-surface);
   color: var(--atelier-text);
-  box-shadow: inset 0 0 0 1px var(--atelier-border-soft);
+  font: 500 var(--t-base)/1 var(--atelier-font);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 120ms, border-color 120ms, color 120ms;
 }
-.btn-secondary:hover:not(:disabled) {
-  background: var(--atelier-signature-faint);
-  box-shadow: inset 0 0 0 1px var(--atelier-border);
+.btn:hover:not(:disabled) { background: var(--atelier-surface-2); }
+.btn:active:not(:disabled) { background: var(--atelier-surface-3); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn .ic { margin-left: -2px; }
+.btn-primary { background: var(--atelier-signature); border-color: transparent; color: var(--atelier-signature-contrast); }
+.btn-primary:hover:not(:disabled),
+.btn-primary:active:not(:disabled) { background: var(--atelier-signature-hover); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--atelier-muted); }
+.btn-ghost:hover:not(:disabled) { color: var(--atelier-text); }
+/* Suppression : discrète au repos, rouge au survol et au focus */
+.btn-danger { background: transparent; border-color: transparent; color: var(--atelier-muted); }
+.btn-danger:hover:not(:disabled),
+.btn-danger:focus-visible { color: var(--atelier-down); background: color-mix(in oklab, var(--atelier-down) 9%, transparent); }
+.btn-sm { height: 26px; padding: 0 9px; font-size: var(--t-small); }
+.btn-lg { height: 38px; padding: 0 16px; font-size: var(--t-strong); }
+@media (max-width: 767px) {
+  .btn { height: 36px; }
+  .btn-sm { height: 32px; }
+  .btn-lg { height: 44px; }
 }
-.btn-danger { color: var(--framboise); }
-.btn-danger:hover { background: rgba(194, 86, 107, .1); }
-.btn-sm { padding: .35rem .65rem; font-size: .85rem; }
 
-/* -------------------------------------------------------------- champs */
+/* Lien d'action en texte (signature lisible) */
+.lien-signature { color: var(--atelier-ink); text-decoration: none; font-weight: 500; }
+.lien-signature:hover { text-decoration: underline; }
+button.lien-signature { background: none; border: 0; padding: 0; font: inherit; font-weight: 500; cursor: pointer; }
+
+/* ----------------------------------------------------------------- champs */
 .field {
+  display: block;
   width: 100%;
-  border-radius: 6px;
+  min-height: 32px;
+  padding: 6px 10px;
   border: 1px solid var(--atelier-border-soft);
+  border-radius: var(--atelier-radius-md);
   background: var(--atelier-field);
-  padding: .6rem .75rem;
-  font-size: .95rem;
-  color: inherit;
+  color: var(--atelier-text);
+  font: 400 var(--t-strong)/1.4 var(--atelier-font);
+  transition: border-color 120ms, box-shadow 120ms;
 }
-.field::placeholder { color: var(--atelier-muted); opacity: .75; }
-.field:focus {
-  outline: none;
-  border-color: var(--atelier-signature);
-  box-shadow: var(--atelier-focus);
+.field::placeholder { color: var(--atelier-faint); }
+.field:hover { border-color: color-mix(in oklab, var(--atelier-border-soft) 60%, var(--atelier-muted)); }
+.field:focus { outline: none; border-color: var(--atelier-signature); box-shadow: var(--atelier-focus); }
+.field:disabled { opacity: .55; cursor: not-allowed; }
+.field[aria-invalid="true"] { border-color: var(--atelier-down); }
+select.field {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 30px;
+  background-image: var(--chevron);
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  cursor: pointer;
 }
 textarea.field { line-height: 1.55; resize: vertical; }
-.label { display: block; margin-bottom: .35rem; font-size: .875rem; font-weight: 500; }
-.hint { font-size: .8rem; color: var(--atelier-muted); margin-top: .3rem; }
+.label { display: block; margin-bottom: 6px; font-size: var(--t-base); font-weight: 500; color: color-mix(in oklab, var(--atelier-text) 82%, var(--atelier-muted)); }
+.hint { margin-top: 6px; font-size: var(--t-small); color: var(--atelier-muted); }
 
-/* Cartes et panneaux : surface, trait néon, halo */
-.panneau {
-  background-color: var(--atelier-surface);
-  border: 1px solid var(--atelier-border);
-  border-radius: 8px;
-  box-shadow: var(--atelier-glow);
+/* Contrôle segmenté (thème, onglets d'import) */
+.seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: var(--atelier-radius-md); background: var(--atelier-surface-2); }
+.seg button {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--atelier-radius-sm);
+  background: transparent;
+  color: var(--atelier-muted);
+  font: 500 var(--t-small)/1 var(--atelier-font);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 120ms, color 120ms;
+}
+.seg button:hover { color: var(--atelier-text); }
+.seg button[aria-pressed="true"],
+.seg button[aria-selected="true"],
+.seg button[aria-checked="true"] {
+  background: var(--atelier-surface);
+  color: var(--atelier-text);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 0 0 1px var(--atelier-line);
+}
+.seg--icones button { flex: none; width: 28px; padding: 0; }
+@media (max-width: 767px) { .seg button { height: 30px; } }
+
+/* Touche de clavier */
+.touche {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 1px solid var(--atelier-line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--atelier-surface);
+  color: var(--atelier-muted);
+  font: 500 11px/1 var(--atelier-font);
 }
 
-/* Blocs de code et texte extrait : surface teintée */
+/* Étiquette neutre (type de fiche) */
+.etiquette {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border: 1px solid var(--atelier-border-soft);
+  border-radius: var(--atelier-radius-sm);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  color: color-mix(in oklab, var(--atelier-text) 82%, var(--atelier-muted));
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------- panneaux, listes, blocs */
+.panneau {
+  background: var(--atelier-surface);
+  border: 1px solid var(--atelier-border);
+  border-radius: var(--atelier-radius-lg);
+}
+.panneau__titre { margin: 0; font-size: var(--t-strong); font-weight: 600; }
+
+/* En-tête de groupe : titre 600, compteur, note discrète, filet dessous */
+.groupe {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--atelier-line);
+}
+.groupe h2 { margin: 0; font-size: var(--t-base); font-weight: 600; }
+.groupe .compte { font-size: var(--t-meta); font-weight: 500; color: var(--atelier-faint); font-variant-numeric: tabular-nums; }
+.groupe .fin { margin-left: auto; }
+
+/* Ligne de liste dense */
+.ligne {
+  display: grid;
+  align-items: center;
+  gap: 4px 16px;
+  min-height: var(--row-h);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--atelier-line);
+}
+.ligne__titre { font-weight: 500; color: var(--atelier-text); text-decoration: none; }
+a.ligne__titre:hover { text-decoration: underline; }
+.meta { font-size: var(--t-small); color: var(--atelier-muted); font-variant-numeric: tabular-nums; }
+
+/* Texte de cours, à lire : mesure et interligne confortables */
 .bloc {
   background: var(--atelier-surface-2);
   color: var(--atelier-text);
-  box-shadow: inset 0 0 0 1px var(--atelier-border-soft);
+  border: 1px solid var(--atelier-line);
+  border-radius: var(--atelier-radius-md);
 }
+.lecture { font-size: var(--t-strong); line-height: 1.65; max-width: 72ch; }
 
-/* Liens et repères en couleur signature (version lisible pour du texte) */
-.lien-signature { color: var(--atelier-ink); }
-
-/* Barre flottante du générateur : élément actif, halo renforcé */
+/* Barre flottante du générateur : flotte au-dessus du contenu, seule à porter une ombre */
 .barre-actions {
-  background: var(--atelier-surface-2);
+  background: var(--atelier-surface);
   color: var(--atelier-text);
   border: 1px solid var(--atelier-border);
+  border-radius: var(--atelier-radius-lg);
   box-shadow: var(--atelier-glow-strong);
 }
 
-/* Bulle de notification (info) : surface sélection, trait néon */
-.toast-info {
-  background: var(--atelier-surface-3);
+/* Bulle de notification */
+.toast {
+  background: var(--atelier-surface);
   color: var(--atelier-text);
-  box-shadow: inset 0 0 0 1px var(--atelier-border), var(--atelier-glow-strong);
+  border: 1px solid var(--atelier-border-soft);
+  border-radius: var(--atelier-radius-md);
+  box-shadow: var(--atelier-glow-strong);
+}
+.toast[data-kind="erreur"] {
+  color: var(--atelier-down);
+  border-color: color-mix(in oklab, var(--atelier-down) 35%, var(--atelier-border-soft));
 }
 
-/* Barre de maîtrise (émeraude) */
-.maitrise { height: 4px; border-radius: 2px; background: var(--atelier-line); overflow: hidden; }
+/* Message d'état anormal (texte) */
+.texte-attention { color: var(--atelier-warn); }
+.texte-erreur { color: var(--atelier-down); }
+
+/* Barre de maîtrise (émeraude : donnée) */
+.maitrise { height: 4px; border-radius: 2px; background: var(--atelier-surface-3); overflow: hidden; }
 .maitrise > span { display: block; height: 100%; background: var(--emeraude); border-radius: 2px; }
-/* Progression de la séance (donnée clé, pas un niveau de maîtrise) : couleur signature */
-.maitrise.progression > span {
-  background: var(--atelier-signature);
-  box-shadow: 0 0 10px -1px var(--atelier-signature);
-}
+.dark .maitrise > span { background: var(--emeraude-clair); }
+/* Progression de la séance (une seule mesure) : couleur signature, sans lueur */
+.maitrise.progression > span { background: var(--atelier-signature); transition: width 300ms var(--ease-out); }
+.texte-maitrise { color: var(--emeraude); }
+.dark .texte-maitrise { color: var(--emeraude-clair); }
 
-/* Choix du moteur d'IA */
+/* Choix du moteur d'IA : tuile sélectionnable */
 .moteur {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: .2rem;
-  padding: .85rem 1rem;
-  border-radius: 8px;
-  border: 1.5px solid var(--atelier-border-soft);
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--atelier-border-soft);
+  border-radius: var(--atelier-radius-lg);
+  background: var(--atelier-surface);
   cursor: pointer;
-  transition: border-color .15s, background-color .15s;
+  transition: border-color 120ms, background-color 120ms;
 }
-.moteur:hover { border-color: var(--atelier-border); background: var(--atelier-signature-faint); }
+.moteur:hover { background: var(--atelier-surface-2); }
 .moteur:has(input:checked) {
-  border-color: var(--atelier-signature);
+  border-color: color-mix(in oklab, var(--atelier-signature) 55%, transparent);
   background: var(--atelier-signature-soft);
-  box-shadow: var(--atelier-signature-glow);
 }
 .moteur:has(input:focus-visible) { outline: 2px solid var(--atelier-signature); outline-offset: 2px; }
-.moteur-etat { margin-top: .25rem; color: var(--atelier-muted); }
-.moteur-etat.is-ok { color: var(--emeraude); }
-.moteur-etat.is-ko { color: var(--framboise); }
-
-/* Onglets (import de chapitre) : sélecteur segmenté, onglet actif en sélection */
-.onglets {
-  background: var(--atelier-surface-2);
-  box-shadow: inset 0 0 0 1px var(--atelier-border-soft);
-}
-.onglets [role="tab"] { color: var(--atelier-muted); }
-.onglets [role="tab"][aria-selected="true"] {
-  color: var(--atelier-text);
-  background: var(--atelier-surface-3);
-}
+.moteur-etat { margin-top: 4px; color: var(--atelier-muted); }
+.moteur-etat.is-ko { color: var(--atelier-down); }
 
 /* Zone de dépôt de fichier */
 .depot {
-  border: 1.5px dashed var(--atelier-border-soft);
-  border-radius: 8px;
-  transition: border-color .15s, background-color .15s;
+  border: 1px dashed var(--atelier-border-soft);
+  border-radius: var(--atelier-radius-lg);
+  transition: border-color 120ms, background-color 120ms;
 }
+.depot:hover { background: var(--atelier-surface-2); }
 .depot.is-over { border-color: var(--atelier-signature); background: var(--atelier-signature-soft); }
+.depot:has(+ input:focus-visible) { outline: 2px solid var(--atelier-signature); outline-offset: 2px; }
 
-/* ---------------------------------------------------- la fiche bristol */
+/* --------------------------------------------------------- la fiche bristol
+   Carte de bristol à plat : en-tête séparé par un filet, lignes fines au pas de l'interligne. */
 .fiche-lignes {
-  background-color: var(--fiche-fond);
+  background-color: var(--atelier-surface);
+  /* Trois couches : filet sous l'en-tête, en-tête uni (masque les lignes au-dessus du filet), lignes */
   background-image:
     linear-gradient(to bottom,
-      transparent calc(var(--fiche-entete) - 2px),
-      var(--fiche-filet) calc(var(--fiche-entete) - 2px),
-      var(--fiche-filet) var(--fiche-entete),
+      transparent calc(var(--fiche-entete) - 1px),
+      var(--atelier-border-soft) calc(var(--fiche-entete) - 1px),
+      var(--atelier-border-soft) var(--fiche-entete),
       transparent var(--fiche-entete)),
+    linear-gradient(var(--atelier-surface), var(--atelier-surface)),
     repeating-linear-gradient(to bottom,
       transparent 0,
       transparent calc(var(--fiche-pas) - 1px),
       var(--fiche-ligne) calc(var(--fiche-pas) - 1px),
       var(--fiche-ligne) var(--fiche-pas));
-  background-size: 100% 100%, 100% var(--fiche-pas);
-  background-position: 0 0, 0 var(--fiche-entete);
-  background-repeat: no-repeat, repeat-y;
+  background-size: 100% 100%, 100% var(--fiche-entete), 100% var(--fiche-pas);
+  background-position: 0 0, 0 0, 0 var(--fiche-entete);
+  background-repeat: no-repeat, no-repeat, repeat-y;
   background-attachment: local;
-  box-shadow: var(--fiche-ombre);
-  border-radius: 6px;
+  border: 1px solid var(--atelier-border);
+  border-radius: var(--atelier-radius-lg);
 }
 
 .fiche { perspective: 1800px; }
@@ -248,7 +471,7 @@ textarea.field { line-height: 1.55; resize: vertical; }
   position: relative;
   min-height: 22rem;
   transform-style: preserve-3d;
-  transition: transform .65s cubic-bezier(.2, .75, .25, 1);
+  transition: transform 560ms var(--ease-out);
   cursor: pointer;
 }
 .fiche.is-flipped .fiche-inner { transform: rotateY(180deg); }
@@ -263,7 +486,7 @@ textarea.field { line-height: 1.55; resize: vertical; }
   backface-visibility: hidden;
 }
 .fiche-verso { transform: rotateY(180deg); }
-.fiche-inner:focus-visible { outline: 2px solid var(--atelier-signature); outline-offset: 6px; border-radius: 8px; }
+.fiche-inner:focus-visible { outline: 2px solid var(--atelier-signature); outline-offset: 4px; border-radius: var(--atelier-radius-lg); }
 
 .fiche-entete {
   height: var(--fiche-entete);
@@ -271,79 +494,99 @@ textarea.field { line-height: 1.55; resize: vertical; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0 1.75rem;
-  font-size: .85rem;
-  color: var(--texte-doux);
+  gap: 16px;
+  padding: 0 24px;
+  font-size: var(--t-small);
+  color: var(--atelier-muted);
 }
-.fiche-type { color: var(--atelier-ink); font-weight: 600; }
+.fiche-entete > :last-child { min-width: 0; text-align: right; }
 
 .fiche-texte {
   flex: 1;
-  padding: calc(var(--fiche-pas) * .5) 1.75rem var(--fiche-pas);
-  font-family: Literata, Georgia, serif;
+  padding: 7px 24px var(--fiche-pas);
   line-height: var(--fiche-pas);
   white-space: pre-line;
   overflow-wrap: anywhere;
+  color: var(--atelier-text);
 }
-.fiche-recto .fiche-texte { font-size: 1.4rem; font-weight: 500; }
-.fiche-verso .fiche-texte { font-size: 1.1rem; }
+.fiche-recto .fiche-texte,
+.fiche-texte--question { font-size: 1.25rem; font-weight: 500; letter-spacing: -0.012em; }
+.fiche-verso .fiche-texte { font-size: 1rem; }
 .fiche-texte .katex-display { margin: .5rem 0; overflow-x: auto; overflow-y: hidden; padding: .25rem 0; }
 
-.fiche-indice { padding: 0 1.75rem 1rem; font-size: .8rem; color: var(--texte-doux); }
+.fiche-indice {
+  margin: 0;
+  padding: 0 24px 16px;
+  font-size: var(--t-small);
+  color: var(--atelier-faint);
+}
 
-/* Pile de fiches (tableau de bord) */
-.pile { position: relative; }
-.pile::before, .pile::after {
+/* Pile de fiches (tableau de bord) : deux tranches de bristol à plat sous la fiche */
+.pile { position: relative; padding-bottom: 12px; }
+.pile::before,
+.pile::after {
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: 6px;
-  background: var(--fiche-fond);
-  box-shadow: var(--fiche-ombre);
+  bottom: 0;
+  height: 24px;
+  border: 1px solid var(--atelier-border);
+  border-top: 0;
+  border-radius: 0 0 var(--atelier-radius-lg) var(--atelier-radius-lg);
+  background: var(--atelier-surface);
 }
-.pile::before { transform: rotate(-2.2deg) translate(-6px, 6px); opacity: .55; }
-.pile::after  { transform: rotate(1.4deg) translate(5px, 3px); opacity: .8; }
+.pile::before { left: 16px; right: 16px; bottom: 0; }
+.pile::after { left: 8px; right: 8px; bottom: 6px; }
 .pile > .fiche-lignes { position: relative; z-index: 1; }
 
-/* Boutons d'évaluation */
+/* Boutons d'évaluation : neutres, une pastille porte le sens */
 .note {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: .15rem;
-  padding: .8rem .5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  border: 1.5px solid transparent;
-  background-color: var(--atelier-surface);
-  transition: background-color .15s, transform .1s;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--atelier-border-soft);
+  border-radius: var(--atelier-radius-md);
+  background: var(--atelier-surface);
+  color: var(--atelier-text);
+  font: 500 var(--t-strong)/1 var(--atelier-font);
+  cursor: pointer;
+  transition: background-color 120ms, border-color 120ms;
 }
-.note:active { transform: translateY(1px); }
-.note kbd { font: 500 .72rem/1 "Instrument Sans", system-ui, sans-serif; opacity: .7; }
-.note-revoir   { color: var(--framboise); border-color: rgba(194, 86, 107, .45); }
-.note-revoir:hover   { background: rgba(194, 86, 107, .1); }
-.note-correct  { color: var(--atelier-text); border-color: var(--atelier-border-soft); }
-.note-correct:hover  { background: var(--atelier-signature-faint); }
-.note-maitrise { color: var(--emeraude); border-color: rgba(42, 156, 115, .45); }
-.dark .note-maitrise { color: #45B98D; }
-.note-maitrise:hover { background: rgba(42, 156, 115, .1); }
+.note::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--atelier-faint); }
+.note:hover { background: var(--atelier-surface-2); }
+.note:active { background: var(--atelier-surface-3); }
+.note .touche { margin-left: 2px; }
+.note-revoir::before { background: var(--framboise); }
+.note-correct::before { background: var(--ambre); }
+.note-maitrise::before { background: var(--emeraude); }
+.note-revoir:hover { border-color: color-mix(in oklab, var(--framboise) 45%, var(--atelier-border-soft)); }
+.note-correct:hover { border-color: color-mix(in oklab, var(--ambre) 50%, var(--atelier-border-soft)); }
+.note-maitrise:hover { border-color: color-mix(in oklab, var(--emeraude) 45%, var(--atelier-border-soft)); }
+@media (max-width: 767px) {
+  .note { height: 48px; padding: 0 8px; }
+  .note .touche { display: none; }
+}
 
-/* Pastilles de statut */
-.statut { display: inline-flex; align-items: center; gap: .35rem; font-size: .8rem; color: var(--texte-doux); }
-.statut::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; }
+/* Pastilles de statut (couleurs de données) */
+.statut { display: inline-flex; align-items: center; gap: 6px; font-size: var(--t-small); color: var(--atelier-muted); white-space: nowrap; }
+.statut::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
 .statut-nouvelle  { color: var(--atelier-muted); }
+.statut-nouvelle::before { background: transparent; box-shadow: inset 0 0 0 1.5px var(--atelier-faint); }
 .statut-a_revoir  { color: var(--framboise); }
 .statut-en_cours  { color: var(--ambre-fonce); }
 .dark .statut-en_cours { color: var(--ambre); }
 .statut-maitrisee { color: var(--emeraude); }
+.dark .statut-maitrisee { color: var(--emeraude-clair); }
 
 /* Chargement */
 .plume {
-  width: 1rem; height: 1rem;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
+  border: 2px solid var(--atelier-border-soft);
+  border-top-color: var(--atelier-signature);
   animation: tourne .8s linear infinite;
 }
 @keyframes tourne { to { transform: rotate(360deg); } }
@@ -351,14 +594,15 @@ textarea.field { line-height: 1.55; resize: vertical; }
 .math-scroll .katex-display { overflow-x: auto; overflow-y: hidden; }
 
 @media (max-width: 640px) {
-  :root { --fiche-entete: 3.5rem; }
-  .fiche-recto .fiche-texte { font-size: 1.2rem; }
-  .fiche-entete, .fiche-texte, .fiche-indice { padding-left: 1.1rem; padding-right: 1.1rem; }
+  :root { --fiche-entete: 2.75rem; }
+  .fiche-recto .fiche-texte, .fiche-texte--question { font-size: 1.125rem; }
+  .fiche-verso .fiche-texte { font-size: 1rem; }
+  .fiche-entete, .fiche-texte, .fiche-indice { padding-left: 16px; padding-right: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .fiche-inner { transition: none; }
   .plume { animation-duration: 2.4s; }
-  #sidebar { transition: none; }
+  *, *::before, *::after { transition-duration: 0ms !important; }
 }

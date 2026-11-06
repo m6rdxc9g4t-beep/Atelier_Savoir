@@ -1,11 +1,11 @@
 {# Fiche bristol statique (aperçu) #}
 {% macro fiche_apercu(type_label, contexte, texte, indice=None) -%}
-<div class="fiche-lignes flex min-h-[15rem] flex-col">
+<div class="fiche-lignes flex min-h-[14rem] flex-col">
   <div class="fiche-entete">
-    <span class="fiche-type">{{ type_label }}</span>
+    <span class="etiquette">{{ type_label }}</span>
     <span class="truncate">{{ contexte }}</span>
   </div>
-  <div class="fiche-texte text-xl font-medium">{{ texte }}</div>
+  <div class="fiche-texte fiche-texte--question">{{ texte }}</div>
   {% if indice %}<p class="fiche-indice">{{ indice }}</p>{% endif %}
 </div>
 {%- endmacro %}
@@ -13,32 +13,26 @@
 {# Ligne de cours avec barre de maîtrise #}
 {% macro ligne_cours(course) -%}
 {% set pct = (100 * course.mastered_count / course.card_count)|round|int if course.card_count else 0 %}
-<li class="grid gap-3 py-5 sm:grid-cols-[1fr_12rem_auto] sm:items-center sm:gap-6">
-  <div class="min-w-0">
-    <a href="{{ url_for('pages.course_detail', course_id=course.id) }}"
-       class="font-serif text-lg font-medium hover:text-encre">{{ course.title }}</a>
-    <p class="mt-0.5 flex flex-wrap gap-x-4 text-sm text-doux">
-      {% if course.subject %}<span>{{ course.subject }}</span>{% endif %}
-      <span>{{ course.chapter_count|pluriel('chapitre') }}</span>
-      <span>{{ course.card_count|pluriel('fiche') }}</span>
-    </p>
+<li class="ligne grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_6rem_4.5rem_10.5rem_7.5rem]">
+  <div class="flex min-w-0 items-baseline gap-2.5">
+    <a href="{{ url_for('pages.course_detail', course_id=course.id) }}" class="ligne__titre max-w-full flex-none truncate">{{ course.title }}</a>
+    {% if course.subject %}<span class="meta min-w-0 truncate">{{ course.subject }}</span>{% endif %}
   </div>
-  <div>
-    <div class="maitrise" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ pct }}"
+  <span class="meta hidden md:block">{{ course.chapter_count|pluriel('chapitre') }}</span>
+  <span class="meta hidden md:block">{{ course.card_count|pluriel('fiche') }}</span>
+  <div class="order-last col-span-2 flex items-center gap-2.5 md:order-none md:col-span-1">
+    <div class="maitrise w-16 flex-none" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ pct }}"
          aria-label="Maîtrise de {{ course.title }}"><span style="width: {{ pct }}%"></span></div>
-    <p class="mt-1.5 text-xs text-doux">
-      {{ course.mastered_count }} / {{ course.card_count }} maîtrisées
-    </p>
+    <span class="meta">{{ course.mastered_count }} / {{ course.card_count }} maîtrisées</span>
+    <span class="meta md:hidden">· {{ course.chapter_count|pluriel('chapitre') }}</span>
   </div>
-  <div class="sm:text-right">
+  <div class="flex justify-end">
     {% if course.due_count %}
-      <a class="btn btn-secondary btn-sm" href="{{ url_for('pages.study', course_id=course.id) }}">
-        Réviser {{ course.due_count }}</a>
+      <a class="btn btn-sm" href="{{ url_for('pages.study', course_id=course.id) }}">Réviser {{ course.due_count }}</a>
     {% elif course.card_count %}
-      <span class="text-sm text-emeraude-600 dark:text-emeraude-400">À jour</span>
+      <span class="meta">À jour</span>
     {% else %}
-      <a class="btn btn-secondary btn-sm" href="{{ url_for('pages.course_detail', course_id=course.id) }}">
-        Ajouter un chapitre</a>
+      <a class="btn btn-sm btn-ghost" href="{{ url_for('pages.course_detail', course_id=course.id) }}">Ajouter un chapitre</a>
     {% endif %}
   </div>
 </li>

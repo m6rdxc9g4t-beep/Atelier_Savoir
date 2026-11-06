@@ -3,54 +3,54 @@
 {% block title %}Tableau de bord{% endblock %}
 
 {% block content %}
-<section class="grid items-center gap-12 lg:grid-cols-[1fr_24rem]">
-  <div>
-    <h1 class="font-serif text-4xl font-semibold leading-tight sm:text-5xl">Votre pile du jour</h1>
+<section class="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-12" aria-labelledby="pile-titre">
+  <div class="pt-1">
+    <h2 id="pile-titre" class="text-xl font-semibold">Votre pile du jour</h2>
 
     {% if stats.due %}
-      <p class="mt-4 max-w-md text-lg text-doux">
+      <p class="mt-2 max-w-md text-md text-doux">
         {% if stats.due == 1 %}1 fiche attend d'être révisée.{% else %}{{ stats.due }} fiches attendent d'être révisées.{% endif %}
         {% if stats.reviewed_today %}Vous en avez déjà revu {{ stats.reviewed_today }} aujourd'hui.{% endif %}
       </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href="{{ url_for('pages.study') }}" class="btn btn-primary">Commencer la révision</a>
-        <a href="{{ url_for('pages.generate') }}" class="btn btn-secondary">Générer des fiches</a>
+      <div class="mt-5 flex flex-wrap gap-2">
+        <a href="{{ url_for('pages.study') }}" class="btn btn-primary btn-lg">Commencer la révision</a>
+        <a href="{{ url_for('pages.generate') }}" class="btn btn-lg">Générer des fiches</a>
       </div>
     {% elif stats.cards %}
-      <p class="mt-4 max-w-md text-lg text-doux">
+      <p class="mt-2 max-w-md text-md text-doux">
         Tout est à jour. Les prochaines fiches reviendront au moment où vous risquez de les oublier.
       </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href="{{ url_for('pages.study', mode='toutes') }}" class="btn btn-primary">Réviser librement</a>
-        <a href="{{ url_for('pages.courses') }}" class="btn btn-secondary">Ajouter un cours</a>
+      <div class="mt-5 flex flex-wrap gap-2">
+        <a href="{{ url_for('pages.study', mode='toutes') }}" class="btn btn-primary btn-lg">Réviser librement</a>
+        <a href="{{ url_for('pages.courses') }}" class="btn btn-lg">Ajouter un cours</a>
       </div>
     {% else %}
-      <p class="mt-4 max-w-md text-lg text-doux">
+      <p class="mt-2 max-w-md text-md text-doux">
         Créez un cours, importez un chapitre (PDF, Markdown ou texte) et Ollama en tirera
         les définitions, formules et théorèmes à mémoriser.
       </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href="{{ url_for('pages.courses') }}" class="btn btn-primary">Créer un cours</a>
+      <div class="mt-5 flex flex-wrap gap-2">
+        <a href="{{ url_for('pages.courses') }}" class="btn btn-primary btn-lg">Créer un cours</a>
       </div>
     {% endif %}
 
-    <dl class="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-ligne pt-6">
-      <div>
+    <dl class="mt-8 grid max-w-md grid-cols-3 divide-x divide-ligne border-y border-ligne">
+      <div class="py-3 pr-4">
         <dt class="text-sm text-doux">Cours</dt>
-        <dd class="font-serif text-2xl">{{ stats.courses }}</dd>
+        <dd class="mt-0.5 text-lg font-semibold tabular-nums">{{ stats.courses }}</dd>
       </div>
-      <div>
+      <div class="px-4 py-3">
         <dt class="text-sm text-doux">Fiches</dt>
-        <dd class="font-serif text-2xl">{{ stats.cards }}</dd>
+        <dd class="mt-0.5 text-lg font-semibold tabular-nums">{{ stats.cards }}</dd>
       </div>
-      <div>
+      <div class="px-4 py-3">
         <dt class="text-sm text-doux">Maîtrisées</dt>
-        <dd class="font-serif text-2xl text-emeraude-600 dark:text-emeraude-400">{{ stats.mastered }}</dd>
+        <dd class="texte-maitrise mt-0.5 text-lg font-semibold tabular-nums">{{ stats.mastered }}</dd>
       </div>
     </dl>
   </div>
 
-  <div class="pile mx-auto w-full max-w-sm">
+  <div class="pile w-full max-w-md lg:max-w-none">
     {% if next_card %}
       {{ fiche_apercu(card_type_labels[next_card.card_type], next_card.course_title, next_card.question,
                       'Prochaine fiche à revoir') }}
@@ -61,13 +61,14 @@
   </div>
 </section>
 
-<section class="mt-20">
-  <div class="flex items-baseline justify-between gap-4">
-    <h2 class="font-serif text-2xl font-semibold">Mes cours</h2>
-    <a href="{{ url_for('pages.courses') }}" class="text-sm font-medium lien-signature hover:underline">Tous les cours</a>
+<section class="mt-12" aria-labelledby="mes-cours">
+  <div class="groupe">
+    <h2 id="mes-cours">Mes cours</h2>
+    <span class="compte">{{ courses|length }}</span>
+    <a href="{{ url_for('pages.courses') }}" class="fin lien-signature text-sm">Tous les cours</a>
   </div>
   {% if courses %}
-    <ul class="mt-2 divide-y divide-ligne">
+    <ul class="m-0 list-none p-0">
       {% for course in courses[:6] %}{{ ligne_cours(course) }}{% endfor %}
     </ul>
   {% else %}

@@ -3,29 +3,31 @@
 {% block title %}Mes cours{% endblock %}
 
 {% block content %}
-<h1 class="font-serif text-4xl font-semibold">Mes cours</h1>
-<p class="mt-2 max-w-xl text-doux">
+<p class="max-w-xl text-doux">
   Un cours regroupe les chapitres d'une matière. Chaque chapitre importé peut être transformé en fiches.
 </p>
 
-<div class="mt-10 grid gap-12 lg:grid-cols-[1fr_20rem]">
+<div class="mt-6 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10">
   <section aria-labelledby="liste-cours">
-    <h2 id="liste-cours" class="sr-only">Liste des cours</h2>
+    <div class="groupe">
+      <h2 id="liste-cours">Cours</h2>
+      <span class="compte">{{ courses|length }}</span>
+    </div>
     {% if courses %}
-      <ul class="divide-y divide-ligne border-t border-ligne">
+      <ul class="m-0 list-none p-0">
         {% for course in courses %}{{ ligne_cours(course) }}{% endfor %}
       </ul>
     {% else %}
-      <div class="panneau px-6 py-10 text-center">
-        <p class="font-serif text-xl">Votre bibliothèque est vide.</p>
-        <p class="mt-2 text-sm text-doux">Créez votre premier cours avec le formulaire.</p>
+      <div class="px-6 py-12 text-center">
+        <p class="text-lg font-semibold">Votre bibliothèque est vide.</p>
+        <p class="mt-1 text-doux">Créez votre premier cours avec le formulaire.</p>
       </div>
     {% endif %}
   </section>
 
-  <section aria-labelledby="nouveau-cours" class="lg:sticky lg:top-12 lg:self-start">
-    <form id="form-cours" class="panneau space-y-4 p-5">
-      <h2 id="nouveau-cours" class="font-serif text-xl font-semibold">Nouveau cours</h2>
+  <section aria-labelledby="nouveau-cours" class="lg:sticky lg:top-[calc(var(--top-h)+24px)]">
+    <form id="form-cours" class="panneau space-y-4 p-4">
+      <h2 id="nouveau-cours" class="panneau__titre">Nouveau cours</h2>
       <div>
         <label class="label" for="cours-titre">Titre</label>
         <input class="field" id="cours-titre" name="title" required maxlength="160"
