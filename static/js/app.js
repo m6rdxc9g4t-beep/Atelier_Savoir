@@ -25,12 +25,7 @@
   function toast(message, kind = 'info') {
     const el = document.getElementById('toast');
     if (!el) return;
-    const styles = {
-      info: 'bg-selection text-texte',
-      succes: 'bg-emeraude-600 text-white',
-      erreur: 'bg-framboise-600 text-white',
-    };
-    el.className = el.className.replace(/\b(bg|text)-\S+/g, '').trim() + ' ' + (styles[kind] || styles.info);
+    el.dataset.kind = kind;
     el.textContent = message;
     el.style.opacity = '1';
     clearTimeout(toastTimer);
@@ -65,38 +60,37 @@
   }
 
   // ---------------------------------------------------------------- thème
-  const THEMES = ['systeme', 'clair', 'sombre'];
-  const THEME_LABELS = { systeme: 'système', clair: 'clair', sombre: 'sombre' };
-
+  // Préférence commune à la suite : static/brand/atelier-theme.js (window.atelierTheme),
+  // valeurs « system », « light », « dark ». Les sélecteurs [data-theme-choice] la reflètent.
   function getTheme() {
-    try { return localStorage.getItem('atelier-theme') || 'systeme'; } catch (e) { return 'systeme'; }
-  }
-
-  function applyTheme(pref) {
-    const dark = pref === 'sombre' ||
-      (pref === 'systeme' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    document.documentElement.classList.toggle('dark', dark);
-    document.querySelectorAll('[data-theme-label]').forEach((el) => { el.textContent = THEME_LABELS[pref]; });
+    return window.atelierTheme ? window.atelierTheme.get() : 'system';
   }
 
   function setTheme(pref) {
-    try { localStorage.setItem('atelier-theme', pref); } catch (e) { /* stockage indisponible */ }
-    applyTheme(pref);
-    document.dispatchEvent(new CustomEvent('atelier:theme', { detail: pref }));
+    if (window.atelierTheme) window.atelierTheme.set(pref);
+  }
+
+  function syncThemeControls() {
+    const pref = getTheme();
+    document.querySelectorAll('[data-theme-choice]').forEach((b) => {
+      b.setAttribute(b.getAttribute('role') === 'radio' ? 'aria-checked' : 'aria-pressed',
+        String(b.dataset.themeChoice === pref));
+    });
   }
 
   // -------------------------------------------------------- statut Ollama
+  // Témoin muet : rien de coloré quand Ollama répond avec son modèle ; ambre ou rouge sinon.
   async function refreshOllamaStatus() {
-    const dot = document.querySelector('[data-ollama-dot]');
+    const box = document.querySelector('[data-ollama-status]');
     const label = document.querySelector('[data-ollama-label]');
-    if (!dot || !label) return null;
+    if (!box || !label) return null;
     try {
       const s = await api('/api/ollama/status');
       if (s.available) {
-        dot.className = 'h-2 w-2 rounded-full ' + (s.model_installed ? 'bg-emeraude-400' : 'bg-ambre-400');
+        box.dataset.etat = s.model_installed ? 'ok' : 'partiel';
         label.textContent = s.model_installed ? `Ollama : ${s.model}` : `Modèle ${s.model} absent`;
       } else {
-        dot.className = 'h-2 w-2 rounded-full bg-framboise-400';
+        box.dataset.etat = 'panne';
         label.textContent = 'Ollama hors ligne';
       }
       return s;
@@ -107,26 +101,11 @@
 
   // --------------------------------------------------------- init commune
   document.addEventListener('DOMContentLoaded', () => {
-    applyTheme(getTheme());
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if (getTheme() === 'systeme') applyTheme('systeme');
-    });
-    document.querySelectorAll('[data-theme-cycle]').forEach((btn) => btn.addEventListener('click', () => {
-      const next = THEMES[(THEMES.indexOf(getTheme()) + 1) % THEMES.length];
-      setTheme(next);
-    }));
-
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.querySelector('[data-sidebar-backdrop]');
-    const toggle = document.querySelector('[data-sidebar-toggle]');
-    const setOpen = (open) => {
-      sidebar.classList.toggle('is-open', open);
-      backdrop.classList.toggle('hidden', !open);
-      toggle?.setAttribute('aria-expanded', String(open));
-    };
-    toggle?.addEventListener('click', () => setOpen(!sidebar.classList.contains('is-open')));
-    backdrop?.addEventListener('click', () => setOpen(false));
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+    document.querySelectorAll('[data-theme-choice]').forEach((b) =>
+      b.addEventListener('click', () => setTheme(b.dataset.themeChoice)));
+    window.addEventListener('atelier-theme', syncThemeControls);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) syncThemeControls(); });
+    syncThemeControls();
 
     // Confirmation + suppression génériques : <button data-delete="/api/..." data-confirm="...">
     document.body.addEventListener('click', async (e) => {

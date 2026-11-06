@@ -1,26 +1,60 @@
-{# Icônes de la navigation (trait 1.6, 20 px, héritent de la couleur du texte) #}
-{% macro icon(name, cls='h-5 w-5') -%}
-<svg class="{{ cls }} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+{# Icônes trait de l'interface : Lucide (licence ISC), grille 24, trait 1.75, couleur du texte #}
+{% macro icon(name, cls='ic') -%}
+<svg class="{{ cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 {%- if name == 'accueil' %}
-  <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/>
+  <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
 {%- elif name == 'cours' %}
-  <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M13 4h5.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H13z"/><path d="M7 8h1.5M15.5 8H17"/>
+  <path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>
 {%- elif name == 'ia' %}
-  <rect x="3.5" y="7" width="13" height="13" rx="1.5"/><path d="M7.5 7V5.5A1.5 1.5 0 0 1 9 4h10a1.5 1.5 0 0 1 1.5 1.5v10A1.5 1.5 0 0 1 19 17h-2.5"/><path d="M7 12h6M7 15.5h4"/>
+  <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>
 {%- elif name == 'revision' %}
-  <path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/>
+  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
 {%- elif name == 'reglages' %}
-  <path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>
+  <path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/>
+{%- elif name == 'systeme' %}
+  <rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/>
+{%- elif name == 'clair' %}
+  <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+{%- elif name == 'sombre' %}
+  <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+{%- elif name == 'fermer' %}
+  <path d="M18 6 6 18M6 6l12 12"/>
+{%- elif name == 'chevron' %}
+  <path d="m9 18 6-6-6-6"/>
+{%- elif name == 'plus' %}
+  <path d="M5 12h14M12 5v14"/>
+{%- elif name == 'importer' %}
+  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>
+{%- elif name == 'savoir' %}
+  <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
 {%- endif %}
 </svg>
 {%- endmacro %}
 
 
-{# Marque commune de la suite Atelier (static/brand/atelier-brand.css) #}
+{# Glyphe de l'app (Lucide graduation-cap), blanc dans l'icône carrée en dégradé de la signature #}
+{% macro glyphe() -%}
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+{%- endmacro %}
+
+
+{# Marque commune de la suite Atelier (static/brand/atelier-brand.css) : ouvre la fenêtre « À propos » #}
 {% macro brand() -%}
 <button type="button" class="atelier-brand" aria-haspopup="dialog" title="À propos d'Atelier Savoir" data-atelier-about>
-  <span class="atelier-brand__tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
-  <span class="atelier-brand__name"><span class="atelier-brand__prefix">atelier_</span>Savoir</span>
+  <span class="atelier-brand__tile" aria-hidden="true">{{ glyphe() }}</span>
+  <span class="atelier-brand__name"><span class="atelier-brand__prefix">Atelier </span>Savoir</span>
 </button>
+{%- endmacro %}
+
+
+{# Choix du thème (Système / Clair / Sombre), préférence commune à la suite (atelier-theme.js) #}
+{% macro theme_switch(cls='') -%}
+<div class="seg seg--icones {{ cls }}" role="group" aria-label="Thème">
+  {% for value, label in [('system', 'Comme le système'), ('light', 'Clair'), ('dark', 'Sombre')] %}
+    <button type="button" data-theme-choice="{{ value }}" aria-pressed="false" title="{{ label }}" aria-label="Thème : {{ label|lower }}">
+      {{ icon({'system': 'systeme', 'light': 'clair', 'dark': 'sombre'}[value], 'ic ic-sm') }}
+    </button>
+  {% endfor %}
+</div>
 {%- endmacro %}

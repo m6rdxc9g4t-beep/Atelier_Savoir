@@ -84,6 +84,20 @@ def test_pages_avec_donnees(client):
     assert client.get("/courses/999").status_code == 404
 
 
+def test_marque_et_theme_communs(client):
+    """Charte v2 : marque commune (copie verbatim), thème posé avant les feuilles de style."""
+    html = client.get("/").get_data(as_text=True)
+    assert html.index("brand/atelier-theme.js") < html.index("brand/atelier-brand.css")
+    assert 'data-atelier-app="savoir"' in html
+    assert 'class="atelier-brand__prefix">Atelier </span>Savoir' in html
+    brand = Path(__file__).resolve().parent.parent / "static" / "brand"
+    for name in ("atelier-brand.css", "atelier-theme.js", "inter-latin-wght-normal.woff2",
+                 "inter-latin-ext-wght-normal.woff2", "LICENSE-Inter.txt"):
+        assert (brand / name).is_file(), name
+    assert not list(brand.glob("nunito*"))
+    css = (brand / "atelier-brand.css").read_text(encoding="utf-8")
+    assert "--atelier-sig-savoir: #a853c1;" in css
+
 # ---------------------------------------------------------- cours/chapitres
 def test_creation_cours_validation(client):
     assert client.post("/api/courses", json={"title": "  "}).status_code == 400
