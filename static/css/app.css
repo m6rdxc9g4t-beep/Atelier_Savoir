@@ -1,10 +1,12 @@
 /* Atelier Savoir — styles complémentaires à Tailwind.
 
    Charte v2 « Linear » de la suite (static/brand/atelier-brand.css, data-atelier-app="savoir") :
-   structure neutre commune en gris froids (clair et sombre), plate au repos, traits de 1 px, Inter.
+   structure commune crème en clair, bleu nuit en sombre, plate au repos, traits de 1 px, Inter.
    La signature de Savoir (#a853c1) ne sert qu'à l'accent : bouton principal, sélection, focus, liens,
    progression de la séance. Fonds, surfaces, traits et textes viennent des jetons --atelier-*.
-   Couleurs de sens inchangées : ambre (en cours), émeraude (maîtrise), framboise (à revoir).
+   Couleurs de sens inchangées : ambre (en cours), émeraude (maîtrise), framboise (à revoir) ;
+   en texte ou en trait fin, leurs variantes --*-fort (≥ 4,5:1 sur crème et sur bleu nuit).
+   Chiffres clés : cartes arrondies .atelier-kpi (coins de 12 px) de la marque commune.
    Pièce maîtresse : la fiche bristol (.fiche-lignes) de l'écran de révision. */
 
 :root {
@@ -13,6 +15,11 @@
   --emeraude: #2A9C73;
   --emeraude-clair: #45B98D;
   --framboise: #C2566B;
+  /* Texte, pastille fine, barre : un cran plus foncé sur crème (texte ≥ 4,5:1, trait ≥ 3:1) */
+  --emeraude-fort: #1F7D5B;
+  --framboise-fort: #A03F54;
+  --ambre-fort: #8A5C12;
+  --ambre-pastille: #B57A1C;
 
   /* Échelle typographique : méta 11.5 · petit 12 · base 13 · fort 14 · titre 15 · page 20 · écran 24 */
   --t-meta: 11.5px;
@@ -33,10 +40,14 @@
   --fiche-entete: 2.75rem;    /* hauteur de la zone au-dessus du filet */
   --fiche-ligne: color-mix(in oklab, var(--atelier-line) 80%, transparent);
 
-  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f636c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f574b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
 }
 .dark {
-  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23969aa3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
+  --emeraude-fort: #45B98D;
+  --framboise-fort: #D9768A;
+  --ambre-fort: #E8B04A;
+  --ambre-pastille: #E8B04A;
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a3aec2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
 }
 /* Téléphone : base 14 px */
 @media (max-width: 767px) {
@@ -298,7 +309,7 @@ textarea.field { line-height: 1.55; resize: vertical; }
 .seg button[aria-checked="true"] {
   background: var(--atelier-surface);
   color: var(--atelier-text);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 0 0 1px var(--atelier-line);
+  box-shadow: 0 1px 2px rgb(40 30 15 / 0.08), 0 0 0 1px var(--atelier-line);
 }
 .seg--icones button { flex: none; width: 28px; padding: 0; }
 @media (max-width: 767px) { .seg button { height: 30px; } }
@@ -396,18 +407,22 @@ a.ligne__titre:hover { text-decoration: underline; }
   border-color: color-mix(in oklab, var(--atelier-down) 35%, var(--atelier-border-soft));
 }
 
+/* Rangée de cartes de chiffres (.atelier-kpi de la marque commune) */
+.kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.kpis .atelier-kpi { padding: 12px 14px; }
+.kpis dd { margin: 0; }
+.kpis--centre .atelier-kpi { align-items: center; text-align: center; }
+
 /* Message d'état anormal (texte) */
 .texte-attention { color: var(--atelier-warn); }
 .texte-erreur { color: var(--atelier-down); }
 
 /* Barre de maîtrise (émeraude : donnée) */
 .maitrise { height: 4px; border-radius: 2px; background: var(--atelier-surface-3); overflow: hidden; }
-.maitrise > span { display: block; height: 100%; background: var(--emeraude); border-radius: 2px; }
-.dark .maitrise > span { background: var(--emeraude-clair); }
+.maitrise > span { display: block; height: 100%; background: var(--emeraude-fort); border-radius: 2px; }
 /* Progression de la séance (une seule mesure) : couleur signature, sans lueur */
 .maitrise.progression > span { background: var(--atelier-signature); transition: width 300ms var(--ease-out); }
-.texte-maitrise { color: var(--emeraude); }
-.dark .texte-maitrise { color: var(--emeraude-clair); }
+.texte-maitrise { color: var(--emeraude-fort); }
 
 /* Choix du moteur d'IA : tuile sélectionnable */
 .moteur {
@@ -559,7 +574,7 @@ a.ligne__titre:hover { text-decoration: underline; }
 .note:active { background: var(--atelier-surface-3); }
 .note .touche { margin-left: 2px; }
 .note-revoir::before { background: var(--framboise); }
-.note-correct::before { background: var(--ambre); }
+.note-correct::before { background: var(--ambre-pastille); }
 .note-maitrise::before { background: var(--emeraude); }
 .note-revoir:hover { border-color: color-mix(in oklab, var(--framboise) 45%, var(--atelier-border-soft)); }
 .note-correct:hover { border-color: color-mix(in oklab, var(--ambre) 50%, var(--atelier-border-soft)); }
@@ -574,11 +589,9 @@ a.ligne__titre:hover { text-decoration: underline; }
 .statut::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
 .statut-nouvelle  { color: var(--atelier-muted); }
 .statut-nouvelle::before { background: transparent; box-shadow: inset 0 0 0 1.5px var(--atelier-faint); }
-.statut-a_revoir  { color: var(--framboise); }
-.statut-en_cours  { color: var(--ambre-fonce); }
-.dark .statut-en_cours { color: var(--ambre); }
-.statut-maitrisee { color: var(--emeraude); }
-.dark .statut-maitrisee { color: var(--emeraude-clair); }
+.statut-a_revoir  { color: var(--framboise-fort); }
+.statut-en_cours  { color: var(--ambre-fort); }
+.statut-maitrisee { color: var(--emeraude-fort); }
 
 /* Chargement */
 .plume {
