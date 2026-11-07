@@ -35,7 +35,7 @@ module.exports = {
         ambre: { 100: '#FBEBC8', 300: '#F2CB78', 400: '#E8B04A', 500: '#D9962A', 600: '#B57A1C', 700: '#8A5C12' },
         emeraude: { 100: '#D3F0E4', 300: '#7FD3B0', 400: '#45B98D', 500: '#2A9C73', 600: '#1F7D5B', 700: '#175E45' },
         framboise: { 100: '#F7DDE2', 400: '#D9768A', 500: '#C2566B', 600: '#A03F54' },
-        // Structure neutre commune (jetons --atelier-* de static/brand/atelier-brand.css), qui changent
+        // Structure commune, crème en clair et bleu nuit en sombre (jetons --atelier-* de static/brand/atelier-brand.css), qui changent
         // de valeur en thème sombre (.dark) : pas de variante dark: à écrire, pas de modificateur d'opacité (/50).
         fond: 'var(--atelier-bg)',
         barre: 'var(--atelier-sidebar)',

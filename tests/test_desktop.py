@@ -36,3 +36,18 @@ def test_ollama_deja_lance(monkeypatch):
 
 def test_icone_presente():
     assert desktop.ICON_PATH.exists()
+
+
+def test_fond_fenetre_suit_apparence_macos():
+    class Out:
+        def __init__(self, stdout):
+            self.stdout = stdout
+
+    assert desktop.window_background("darwin", lambda *a, **k: Out("Dark\n")) == "#0b1220"
+    assert desktop.window_background("darwin", lambda *a, **k: Out("")) == "#f8f4ec"
+    assert desktop.window_background("linux") == "#f8f4ec"
+
+    def boom(*a, **k):
+        raise OSError("defaults absent")
+
+    assert desktop.window_background("darwin", boom) == "#f8f4ec"

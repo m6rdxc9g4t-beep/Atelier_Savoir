@@ -147,6 +147,24 @@ def wait_in_dialog_or_forever():
             pass
 
 
+# ----------------------------------------------------------------- fenêtre
+FOND_CLAIR = "#f8f4ec"   # crème : --atelier-bg du thème clair (static/brand/atelier-brand.css)
+FOND_SOMBRE = "#0b1220"  # bleu nuit : --atelier-bg du thème sombre
+
+
+def window_background(platform: str = sys.platform, runner=subprocess.run) -> str:
+    """Fond de la fenêtre avant le chargement de la page : bleu nuit si macOS est en apparence sombre, sinon crème."""
+    if platform == "darwin":
+        try:
+            out = runner(["defaults", "read", "-g", "AppleInterfaceStyle"],
+                         capture_output=True, text=True, timeout=2, check=False)
+        except (OSError, subprocess.SubprocessError):
+            return FOND_CLAIR
+        if "dark" in (out.stdout or "").lower():
+            return FOND_SOMBRE
+    return FOND_CLAIR
+
+
 # ------------------------------------------------------------------- main
 def main(argv: list[str]) -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -167,7 +185,7 @@ def main(argv: list[str]) -> int:
         if webview is not None:
             brand_macos_process()
             webview.create_window(APP_NAME, url, width=1280, height=860, min_size=(900, 600),
-                                  background_color="#0C1624", text_select=True)
+                                  background_color=window_background(), text_select=True)
             webview.start(private_mode=False, storage_path=storage_dir())
         else:
             webbrowser.open(url)

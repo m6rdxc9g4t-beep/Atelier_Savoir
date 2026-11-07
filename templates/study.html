@@ -66,10 +66,10 @@
 <div id="rev-bilan" class="mt-4 hidden">
   <div class="panneau px-6 py-8 text-center">
     <h2 class="text-xl font-semibold">Séance terminée</h2>
-    <dl class="mx-auto mt-6 grid max-w-sm grid-cols-3 divide-x divide-ligne border-y border-ligne">
-      <div class="py-3"><dt class="statut statut-a_revoir justify-center">À revoir</dt><dd class="mt-1 text-xl font-semibold tabular-nums" data-bilan="a_revoir">0</dd></div>
-      <div class="py-3"><dt class="statut statut-en_cours justify-center">Correct</dt><dd class="mt-1 text-xl font-semibold tabular-nums" data-bilan="correct">0</dd></div>
-      <div class="py-3"><dt class="statut statut-maitrisee justify-center">Maîtrisé</dt><dd class="mt-1 text-xl font-semibold tabular-nums" data-bilan="maitrise">0</dd></div>
+    <dl class="kpis kpis--centre mx-auto mt-6 max-w-sm">
+      <div class="atelier-kpi"><dt class="statut statut-a_revoir">À revoir</dt><dd class="atelier-kpi__value" data-bilan="a_revoir">0</dd></div>
+      <div class="atelier-kpi"><dt class="statut statut-en_cours">Correct</dt><dd class="atelier-kpi__value" data-bilan="correct">0</dd></div>
+      <div class="atelier-kpi"><dt class="statut statut-maitrisee">Maîtrisé</dt><dd class="atelier-kpi__value" data-bilan="maitrise">0</dd></div>
     </dl>
     <div class="mt-6 flex flex-wrap justify-center gap-2">
       <button class="btn" type="button" data-recommencer>Nouvelle séance</button>

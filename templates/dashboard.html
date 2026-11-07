@@ -34,18 +34,18 @@
       </div>
     {% endif %}
 
-    <dl class="mt-8 grid max-w-md grid-cols-3 divide-x divide-ligne border-y border-ligne">
-      <div class="py-3 pr-4">
-        <dt class="text-sm text-doux">Cours</dt>
-        <dd class="mt-0.5 text-lg font-semibold tabular-nums">{{ stats.courses }}</dd>
+    <dl class="kpis mt-8 max-w-md">
+      <div class="atelier-kpi">
+        <dt class="atelier-kpi__label">Cours</dt>
+        <dd class="atelier-kpi__value">{{ stats.courses }}</dd>
       </div>
-      <div class="px-4 py-3">
-        <dt class="text-sm text-doux">Fiches</dt>
-        <dd class="mt-0.5 text-lg font-semibold tabular-nums">{{ stats.cards }}</dd>
+      <div class="atelier-kpi">
+        <dt class="atelier-kpi__label">Fiches</dt>
+        <dd class="atelier-kpi__value">{{ stats.cards }}</dd>
       </div>
-      <div class="px-4 py-3">
-        <dt class="text-sm text-doux">Maîtrisées</dt>
-        <dd class="texte-maitrise mt-0.5 text-lg font-semibold tabular-nums">{{ stats.mastered }}</dd>
+      <div class="atelier-kpi">
+        <dt class="atelier-kpi__label">Maîtrisées</dt>
+        <dd class="atelier-kpi__value texte-maitrise">{{ stats.mastered }}</dd>
       </div>
     </dl>
   </div>
